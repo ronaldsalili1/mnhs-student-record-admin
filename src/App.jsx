@@ -159,6 +159,9 @@ const router = createBrowserRouter(
                 />
             </Route>
         </Route>,
+        {
+            basename: '/admin',
+        },
     ),
 );
 
