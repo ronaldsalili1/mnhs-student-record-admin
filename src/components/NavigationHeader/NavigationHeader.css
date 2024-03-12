@@ -1,0 +1,9 @@
+@media screen and (max-width: 480px) {
+    .nav-header {
+        padding: 0px 20px;
+    }
+
+    .admin-name {
+        display: none;
+    }
+}
