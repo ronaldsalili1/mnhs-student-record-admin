@@ -6,8 +6,9 @@ import helmet from 'helmet';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+console.log('🚀 ~ __dirname:', __dirname);
 
-const port = process.env.PORT || 3001;
+const port = 3001;
 
 const app = express();
 app.use(favicon(__dirname + '/dist/favicon.ico'));
