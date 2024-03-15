@@ -18,6 +18,7 @@ app.use(helmet.contentSecurityPolicy({
     },
 }));
 app.use('/admin', express.static(path.join(__dirname, 'dist')));
+app.use('/assets', express.static(path.join(__dirname, 'dist', 'assets')));
 app.get('/admin/*', function(req, res) {
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
