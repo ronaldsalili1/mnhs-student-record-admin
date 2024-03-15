@@ -159,10 +159,10 @@ const router = createBrowserRouter(
                 />
             </Route>
         </Route>,
-        {
-            basename: '/admin',
-        },
     ),
+    {
+        basename: '/admin',
+    },
 );
 
 const App = () => {
