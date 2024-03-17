@@ -38,7 +38,7 @@ const NavigationHeader = () => {
                     level={1}
                     style={{ fontSize: 20, color: token.colorPrimary }}
                 >
-                    Project Name
+                    MNHS Student Records
                 </Title>
                 <div>
                     <Popover

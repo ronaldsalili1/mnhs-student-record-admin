@@ -13,6 +13,8 @@ import {
     FormOutlined,
 } from '@ant-design/icons';
 
+import mnhsLogo from '../../images/mnhs-logo.png';
+
 const { Sider } = Layout;
 
 function getItem(label, key, icon, children, theme) {
@@ -89,18 +91,13 @@ const Drawer = ({ collapsed, setCollapsed }) => {
         >
             <Flex
                 justify="center"
-                align="center"
-                style={{
-                    margin: '20px 15px',
-                    height: 60,
-                    fontSize: 20,
-                    fontWeight: 700,
-                    backgroundColor: 'lightgrey',
-                    borderRadius: 20,
-                    color: token.colorPrimary,
-                }}
+                style={{ margin: '10px 0px' }}
             >
-                {collapsed ? 'L' : 'L O G O'}
+                <img
+                    src={mnhsLogo}
+                    alt="MNHS Logo"
+                    style={{ height: 100 }}
+                />
             </Flex>
             <Menu
                 defaultSelectedKeys={['1']}
