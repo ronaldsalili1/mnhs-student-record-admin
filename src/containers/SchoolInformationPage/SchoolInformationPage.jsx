@@ -1,7 +1,9 @@
-import { useContext, useEffect } from 'react';
-import { Row, Form, Button, Input, Flex, Typography } from 'antd';
+import { useContext, useEffect, useRef } from 'react';
+import { Row, Form, Button, Flex, Typography } from 'antd';
 
 import { NavigationContext } from '../../providers/NavigationProvider';
+import useSchool from '../../hooks/useSchool';
+import InputUI from '../../components/CustomUI/Input';
 
 const { Item } = Form;
 const { Text } = Typography;
@@ -9,6 +11,9 @@ const { Text } = Typography;
 const SchoolInformationPage = () => {
     const layoutState = useContext(NavigationContext);
     const { setTitle } = layoutState;
+    const formRef = useRef(null);
+
+    const { school, loading, loadingSubmit, createOrUpdateSchool } = useSchool();
 
     useEffect(() => {
         setTitle('School Information');
@@ -17,11 +22,25 @@ const SchoolInformationPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const { name, school_id } = school || {};
+    
+    useEffect(() => {
+        const form = formRef.current;
+        if (form) {
+            form.setFieldsValue({
+                name,
+                school_id,
+            });
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [school]);
+
     return (
         <Flex justify="center">
             <Form
+                ref={formRef}
                 layout="vertical"
-                onFinish={values => console.log(values)}
+                onFinish={values => createOrUpdateSchool({ fields: values })}
                 style={{
                     width: 400,
                 }}
@@ -44,7 +63,10 @@ const SchoolInformationPage = () => {
                         },
                     ]}
                 >
-                    <Input placeholder="Enter School Name"/>
+                    <InputUI
+                        loading={loading}
+                        placeholder="Enter School Name"
+                    />
                 </Item>
                 <Item
                     name="school_id"
@@ -56,13 +78,17 @@ const SchoolInformationPage = () => {
                         },
                     ]}
                 >
-                    <Input placeholder="Enter School ID"/>
+                    <InputUI
+                        loading={loading}
+                        placeholder="Enter School ID"
+                    />
                 </Item>
                 <Item>
                     <Flex justify="end">
                         <Button
                             type="primary"
                             htmlType="submit"
+                            loading={loadingSubmit}
                             style={{ minWidth: 80 }}
                         >
                             Save

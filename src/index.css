@@ -12,3 +12,7 @@ body {
     line-height: 1;
     content: "*";
 }
+
+.skeleton-input-ui .ant-skeleton.ant-skeleton-element {
+    width: 100% !important;
+}
