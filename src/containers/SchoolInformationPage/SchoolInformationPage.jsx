@@ -3,7 +3,7 @@ import { Row, Form, Button, Flex, Typography } from 'antd';
 
 import { NavigationContext } from '../../providers/NavigationProvider';
 import useSchool from '../../hooks/useSchool';
-import InputUI from '../../components/CustomUI/Input';
+import SkeletonInput from '../../components/CustomUI/SkeletonInput';
 
 const { Item } = Form;
 const { Text } = Typography;
@@ -63,7 +63,7 @@ const SchoolInformationPage = () => {
                         },
                     ]}
                 >
-                    <InputUI
+                    <SkeletonInput
                         loading={loading}
                         placeholder="Enter School Name"
                     />
@@ -78,7 +78,7 @@ const SchoolInformationPage = () => {
                         },
                     ]}
                 >
-                    <InputUI
+                    <SkeletonInput
                         loading={loading}
                         placeholder="Enter School ID"
                     />

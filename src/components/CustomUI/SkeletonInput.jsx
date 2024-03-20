@@ -1,6 +1,6 @@
 import { Input, Skeleton } from 'antd';
 
-const InputUI = ({ loading, ...rest }) => {
+const SkeletonInput = ({ loading, ...rest }) => {
     if (loading) {
         return (
             <div className="skeleton-input-ui">
@@ -16,4 +16,4 @@ const InputUI = ({ loading, ...rest }) => {
     );
 };
 
-export default InputUI;
+export default SkeletonInput;

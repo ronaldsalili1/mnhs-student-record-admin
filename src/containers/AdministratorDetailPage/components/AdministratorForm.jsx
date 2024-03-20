@@ -1,35 +1,74 @@
 import { useEffect, useMemo, useRef, useState, useContext } from 'react';
-import { Row, Form, Button, Input, Flex, Select, Typography, theme } from 'antd';
+import { Row, Form, Button, Flex, Select, Typography, theme } from 'antd';
 import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 
 import options from '../../../constants/options';
 import { AuthContext } from '../../../providers/AuthProvider';
+import SkeletonInput from '../../../components/CustomUI/SkeletonInput';
+import SkeletonSelect from '../../../components/CustomUI/SkeletonSelect';
+import SkeletonPasswordInput from '../../../components/CustomUI/SkeletonPasswordInput';
 
 const { Item } = Form;
 const { Text } = Typography;
 const { List } = Form;
 
-const AdministratorForm = ({ admin, createOrUpdateAdministrator }) => {
+const AdministratorForm = ({ loading, admin, createOrUpdateAdministrator }) => {
     const formRef = useRef(null);
     const { token } = theme.useToken();
-    const { email, last_name, first_name, middle_name, status } = admin || {};
-
-    const [selectedRoles, setSelectedRoles] = useState([undefined]);
     const { admin: loggedAdmin } = useContext(AuthContext);
 
+    const [selectedRoles, setSelectedRoles] = useState([undefined]);
+    const [currentPass, setCurrentPass] = useState('');
+    const [newPass1, setNewPass1] = useState('');
+    const [newPass2, setNewPass2] = useState('');
+
     const disabled = useMemo(() => {
-        if (!loggedAdmin) {
+        if (loading) {
+            return true;
+        }
+
+        if (loggedAdmin?._id === admin?._id) {
             return false;
         }
 
-        return !(loggedAdmin.roles || []).includes('superadmin');
+        return !(loggedAdmin?.roles || []).includes('superadmin');
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [loggedAdmin]);
+    }, [loggedAdmin, admin, loading]);
+
+    const updatingPassword = useMemo(() => {
+        if (
+            currentPass !== ''
+            || newPass1 !== ''
+            || newPass2 !== ''
+        ) {
+            return true;
+        }
+
+        return false;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentPass, newPass1, newPass2]);
+
+    const canUpdatePass = useMemo(() => {
+        if (admin && (loggedAdmin.roles.includes('superadmin') || loggedAdmin._id === admin._id)) {
+            return true;
+        }
+
+        return false;
+    }, [admin, loggedAdmin]);
 
     useEffect(() => {
         if(admin) {
-            setSelectedRoles(admin.roles);
-            formRef.current?.setFieldValue('roles', admin.roles);
+            const { email, last_name, first_name, middle_name, status, roles, suffix } = admin;
+            setSelectedRoles(roles);
+            formRef.current?.setFieldsValue({
+                roles,
+                email,
+                last_name,
+                first_name,
+                middle_name,
+                suffix,
+                status,
+            });
         }
     }, [admin]);
 
@@ -38,16 +77,6 @@ const AdministratorForm = ({ admin, createOrUpdateAdministrator }) => {
             ref={formRef}
             layout="vertical"
             onFinish={values => createOrUpdateAdministrator({ adminId: admin?._id, fields: values })}
-            initialValues={{
-                roles: selectedRoles,
-                ...(admin && {
-                    email,
-                    last_name,
-                    first_name,
-                    middle_name,
-                    status,
-                }),
-            }}
             style={{
                 width: 400,
             }}
@@ -70,11 +99,74 @@ const AdministratorForm = ({ admin, createOrUpdateAdministrator }) => {
                     },
                 ]}
             >
-                <Input
+                <SkeletonInput
+                    loading={loading}
                     placeholder="Enter Email"
-                    disabled={disabled}
+                    disabled={!loggedAdmin?.roles?.includes('superadmin')}
                 />
             </Item>
+            {
+                canUpdatePass &&
+                <>
+                    <Item
+                        name="current_password"
+                        label="Current Password:"
+                        rules={[
+                            {
+                                required: updatingPassword,
+                                message: 'Current Password is required',
+                            },
+                        ]}
+                    >
+                        <SkeletonPasswordInput
+                            loading={loading}
+                            placeholder="Enter Current Password"
+                            disabled={disabled}
+                            onChange={e => setCurrentPass(e.target.value)}
+                            allowClear
+                        />
+                    </Item>
+                    <Item
+                        name="new_password_1"
+                        label="New Password:"
+                        rules={[
+                            {
+                                required: updatingPassword,
+                                message: 'New Password is required',
+                            },
+                        ]}
+                    >
+                        <SkeletonPasswordInput
+                            loading={loading}
+                            placeholder="Enter New Password"
+                            disabled={disabled}
+                            onChange={e => setNewPass1(e.target.value)}
+                            allowClear
+                        />
+                    </Item>
+                    <Item
+                        name="new_password_2"
+                        label="Confirm Password:"
+                        rules={[
+                            {
+                                required: updatingPassword,
+                                message: 'Confirm Password is required',
+                            },
+                        ]}
+                    >
+                        <SkeletonPasswordInput
+                            loading={loading}
+                            placeholder="Enter Confirm Password"
+                            disabled={disabled}
+                            onChange={e => setNewPass2(e.target.value)}
+                            onPaste={e => {
+                                e.preventDefault();
+                            }}
+                            allowClear
+                        />
+                    </Item>
+                </>
+            }
             <Item
                 name="last_name"
                 label="Last Name:"
@@ -85,7 +177,8 @@ const AdministratorForm = ({ admin, createOrUpdateAdministrator }) => {
                     },
                 ]}
             >
-                <Input
+                <SkeletonInput
+                    loading={loading}
                     placeholder="Enter Last Name"
                     disabled={disabled}
                 />
@@ -100,7 +193,8 @@ const AdministratorForm = ({ admin, createOrUpdateAdministrator }) => {
                     },
                 ]}
             >
-                <Input
+                <SkeletonInput
+                    loading={loading}
                     placeholder="Enter First Name"
                     disabled={disabled}
                 />
@@ -109,7 +203,8 @@ const AdministratorForm = ({ admin, createOrUpdateAdministrator }) => {
                 name="middle_name"
                 label="Middle Name:"
             >
-                <Input
+                <SkeletonInput
+                    loading={loading}
                     placeholder="Enter Middle Name"
                     disabled={disabled}
                 />
@@ -118,7 +213,8 @@ const AdministratorForm = ({ admin, createOrUpdateAdministrator }) => {
                 name="suffix"
                 label="Suffix:"
             >
-                <Input
+                <SkeletonInput
+                    loading={loading}
                     placeholder="Enter Suffix"
                     disabled={disabled}
                 />
@@ -160,7 +256,8 @@ const AdministratorForm = ({ admin, createOrUpdateAdministrator }) => {
                                     ]}
                                     style={{ margin: 0, width: '100%' }}
                                 >
-                                    <Select
+                                    <SkeletonSelect
+                                        loading={loading}
                                         placeholder="Select Role"
                                         disabled={disabled}
                                         options={options.adminRoles.map(role => {
@@ -208,15 +305,15 @@ const AdministratorForm = ({ admin, createOrUpdateAdministrator }) => {
                 )}
             </List>
             {
-                !disabled &&
                 <Item>
                     <Flex justify="end">
                         <Button
                             type="primary"
                             htmlType="submit"
                             style={{ minWidth: 80 }}
+                            disabled={disabled}
                         >
-                        Save
+                            Save
                         </Button>
                     </Flex>
                 </Item>

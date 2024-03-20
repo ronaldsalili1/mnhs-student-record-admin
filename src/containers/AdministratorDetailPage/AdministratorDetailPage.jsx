@@ -5,7 +5,6 @@ import { Flex } from 'antd';
 
 import { NavigationContext } from '../../providers/NavigationProvider';
 import AdministratorForm from './components/AdministratorForm';
-import Loading from '../../components/Loading';
 import useAdministratorDetail from '../../hooks/AdministratorDetailPage/useAdministratorDetail';
 
 const AdministratorDetailPage = () => {
@@ -46,14 +45,11 @@ const AdministratorDetailPage = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [admin]);
 
-    if(loading) {
-        return <Loading/>;
-    }
-
     return (
         <Flex justify="center">
             <AdministratorForm
                 admin={admin}
+                loading={loading}
                 createOrUpdateAdministrator={createOrUpdateAdministrator}
             />
         </Flex>
