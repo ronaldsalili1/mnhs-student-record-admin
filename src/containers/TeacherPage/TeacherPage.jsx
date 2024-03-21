@@ -1,11 +1,13 @@
 import { useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Table, Typography, Badge, Button, Flex, Grid } from 'antd';
 import { PlusSquareFilled } from '@ant-design/icons';
 
 import { NavigationContext } from '../../providers/NavigationProvider';
 import TeacherSearchForm from './components/TeacherSearchForm';
 import options from '../../constants/options';
+import useTeacher from '../../hooks/useTeacher';
+import { getParamsFromUrl, objectToQueryString } from '../../helpers/general';
 
 const { Link } = Typography;
 
@@ -14,7 +16,10 @@ const TeacherPage = () => {
     const { setTitle } = layoutState;
 
     const navigate = useNavigate();
+    const location = useLocation();
     const { xs } = Grid.useBreakpoint();
+    const query = getParamsFromUrl();
+    const { teachers, loading, page, total, limit, getTeachers } = useTeacher();
 
     useEffect(() => {
         setTitle('Teachers');
@@ -23,42 +28,20 @@ const TeacherPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const dataSource = [
-        {
-            key: '621d2a6e9bea8f5e982a129d',
-            _id: '621d2a6e9bea8f5e982a129d',
-            name: 'Cadayong, Mhar Padro',
-            email: 'mhar@email.com',
-            status: 'enabled',
-        },
-        {
-            key: '621d2a6e9bea8f5e982a129e',
-            _id: '621d2a6e9bea8f5e982a129e',
-            name: 'Magayo-ong, Almirah Mae',
-            email: 'almirah@email.com',
-            status: 'enabled',
-        },
-        {
-            key: '621d2a6e9bea8f5e982a129f',
-            _id: '621d2a6e9bea8f5e982a129f',
-            name: 'Pantin, Juden Jay',
-            email: 'juden@email.com',
-            status: 'enabled',
-        },
-        {
-            key: '621d2a6e9bea8f5e982a12a0',
-            _id: '621d2a6e9bea8f5e982a12a0',
-            name: 'Salili, Ronald Hamot',
-            email: 'ronald@email.com',
-            status: 'disabled',
-        },
-    ];
-
     const columns = [
         {
             title: 'Name (Last, First, Suffix, Middle)',
             dataIndex: 'name',
             key: 'name',
+            render: (_, record) => {
+                const {
+                    last_name,
+                    first_name,
+                    suffix,
+                    middle_name,
+                } = record;
+                return `${last_name}, ${first_name}${suffix ? ', ' + suffix : '' }${middle_name ? ', ' + record.middle_name : ''}`;
+            },
         },
         {
             title: 'Email',
@@ -105,7 +88,7 @@ const TeacherPage = () => {
                 gap={10}
                 style={{ margin: '10px 0px' }}
             >
-                <TeacherSearchForm/>
+                <TeacherSearchForm getTeachers={getTeachers}/>
                 <Button
                     type="primary"
                     icon={<PlusSquareFilled />}
@@ -117,9 +100,28 @@ const TeacherPage = () => {
                 </Button>
             </Flex>
             <Table
+                loading={loading}
                 scroll={ { x: true } }
-                dataSource={dataSource}
+                dataSource={teachers.map(teacher => {
+                    return ({
+                        ...teacher,
+                        key: teacher._id,
+                    });
+                })}
                 columns={columns}
+                pagination={{
+                    current: page,
+                    showSizeChanger: true,
+                    onChange: (current, pageSize) => {
+                        const queryObj = { ...query, page: current, limit: pageSize };
+                        getTeachers(queryObj);
+                        const queryString = objectToQueryString(queryObj);
+                        navigate(`${location.pathname}${queryString}`);
+                    },
+                    position: ['bottomRight'],
+                    total,
+                    pageSize: limit,
+                }}
             />
         </>
     );

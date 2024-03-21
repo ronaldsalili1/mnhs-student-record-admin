@@ -26,7 +26,7 @@ const needLogout = ({ meta, navigate, location }) => {
 export const get = async ({ uri, query, navigate, location }) => {
     let queryString = '';
 
-    if (query) {
+    if (query && Object.keys(query).length !== 0) {
         queryString = objectToQueryString(query);
     }
 
@@ -52,7 +52,7 @@ export const get = async ({ uri, query, navigate, location }) => {
 export const post = async ({ uri, query, body={}, navigate, location }) => {
     let queryString = '';
     
-    if (query) {
+    if (query && Object.keys(query).length !== 0) {
         queryString = objectToQueryString(query);
     }
 
@@ -79,7 +79,7 @@ export const post = async ({ uri, query, body={}, navigate, location }) => {
 export const patch = async ({ uri, query, body={}, navigate, location }) => {
     let queryString = '';
     
-    if (query) {
+    if (query && Object.keys(query).length !== 0) {
         queryString = objectToQueryString(query);
     }
 

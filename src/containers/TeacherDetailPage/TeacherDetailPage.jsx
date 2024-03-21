@@ -1,42 +1,12 @@
 import { useContext, useEffect } from 'react';
-import { useParams, Outlet } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
 import DetailTab from '../../components/DetailTab';
 import { NavigationContext } from '../../providers/NavigationProvider';
 import TeacherBasicPage from './TeacherBasicPage/TeacherBasicPage';
 import TeacherSubjectPage from './TeacherSubjectPage/TeacherSubjectPage';
-
-const dataSource = [
-    {
-        key: '621d2a6e9bea8f5e982a129d',
-        _id: '621d2a6e9bea8f5e982a129d',
-        name: 'Cadayong, Mhar Padro',
-        email: 'mhar@email.com',
-        status: 'enabled',
-    },
-    {
-        key: '621d2a6e9bea8f5e982a129e',
-        _id: '621d2a6e9bea8f5e982a129e',
-        name: 'Magayo-ong, Almirah Mae',
-        email: 'almirah@email.com',
-        status: 'enabled',
-    },
-    {
-        key: '621d2a6e9bea8f5e982a129f',
-        _id: '621d2a6e9bea8f5e982a129f',
-        name: 'Pantin, Juden Jay',
-        email: 'juden@email.com',
-        status: 'enabled',
-    },
-    {
-        key: '621d2a6e9bea8f5e982a12a0',
-        _id: '621d2a6e9bea8f5e982a12a0',
-        name: 'Salili, Ronald Hamot',
-        email: 'ronald@email.com',
-        status: 'disabled',
-    },
-];
+import useTeacherDetail from '../../hooks/TeacherDetailPage/useTeacherDetail';
 
 const TeacherDetailPage = () => {
     const layoutState = useContext(NavigationContext);
@@ -44,6 +14,8 @@ const TeacherDetailPage = () => {
 
     const { teacherId, tab } = useParams();
     const navigate = useNavigate();
+
+    const teacherProps = useTeacherDetail(teacherId);
 
     useEffect(() => {
         setBreadcrumbItems([
@@ -63,8 +35,8 @@ const TeacherDetailPage = () => {
         if (!teacherId) {
             setTitle('New Teacher');
         } else {
-            const teacher = dataSource.find(data => data._id === teacherId);
-            setTitle(teacher.name);
+            // const teacher = dataSource.find(data => data._id === teacherId);
+            // setTitle(teacher?.name);
         }
 
         return () => {
@@ -83,7 +55,7 @@ const TeacherDetailPage = () => {
     }, []);
 
     if (!teacherId) {
-        return <TeacherBasicPage/>;
+        return <TeacherBasicPage {...teacherProps}/>;
     }
 
     return (
@@ -93,7 +65,7 @@ const TeacherDetailPage = () => {
                 {
                     key: 'information',
                     label: 'Information',
-                    children: <TeacherBasicPage />,
+                    children: <TeacherBasicPage {...teacherProps}/>,
                 },
                 {
                     key: 'subjects',

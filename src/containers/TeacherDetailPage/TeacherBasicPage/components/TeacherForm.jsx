@@ -1,15 +1,28 @@
-import { Row, Form, Button, Input, Flex, Select, Typography } from 'antd';
+import { useEffect, useRef } from 'react';
+import { Row, Form, Button, Flex, Typography } from 'antd';
 
-import options from '../../../constants/options';
+import options from '../../../../constants/options';
+import SkeletonInput from '../../../../components/CustomUI/SkeletonInput';
+import SkeletonSelect from '../../../../components/CustomUI/SkeletonSelect';
 
 const { Item } = Form;
 const { Text } = Typography;
 
-const TeacherForm = () => {
+const TeacherForm = ({ teacher, loading, createOrUpdateTeacher }) => {
+    const formRef = useRef(null);
+
+    useEffect(() => {
+        formRef.current?.setFieldsValue(teacher);
+    }, [teacher]);
+
     return (
         <Form
+            ref={formRef}
             layout="vertical"
-            onFinish={values => console.log(values)}
+            onFinish={values => createOrUpdateTeacher({
+                teacherId: teacher?._id,
+                fields: values,
+            })}
             style={{
                 width: 400,
             }}
@@ -32,7 +45,10 @@ const TeacherForm = () => {
                     },
                 ]}
             >
-                <Input placeholder="Enter Email"/>
+                <SkeletonInput
+                    loading={loading}
+                    placeholder="Enter Email"
+                />
             </Item>
             <Item
                 name="last_name"
@@ -44,7 +60,10 @@ const TeacherForm = () => {
                     },
                 ]}
             >
-                <Input placeholder="Enter Last Name"/>
+                <SkeletonInput
+                    loading={loading}
+                    placeholder="Enter Last Name"
+                />
             </Item>
             <Item
                 name="first_name"
@@ -56,35 +75,48 @@ const TeacherForm = () => {
                     },
                 ]}
             >
-                <Input placeholder="Enter First Name"/>
+                <SkeletonInput
+                    loading={loading}
+                    placeholder="Enter First Name"
+                />
             </Item>
             <Item
                 name="middle_name"
                 label="Middle Name:"
             >
-                <Input placeholder="Enter Middle Name"/>
+                <SkeletonInput
+                    loading={loading}
+                    placeholder="Enter Middle Name"
+                />
             </Item>
             <Item
                 name="suffix"
                 label="Suffix:"
             >
-                <Input placeholder="Enter Suffix"/>
-            </Item>
-            <Item
-                name="status"
-                label="Status:"
-                rules={[
-                    {
-                        required: true,
-                        message: 'Status is required',
-                    },
-                ]}
-            >
-                <Select
-                    placeholder="Enter Status"
-                    options={options.status}
+                <SkeletonInput
+                    loading={loading}
+                    placeholder="Enter Suffix"
                 />
             </Item>
+            {
+                teacher &&
+                <Item
+                    name="status"
+                    label="Status:"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Status is required',
+                        },
+                    ]}
+                >
+                    <SkeletonSelect
+                        loading={loading}
+                        placeholder="Enter Status"
+                        options={options.status}
+                    />
+                </Item>
+            }
             <Item>
                 <Flex justify="end">
                     <Button
