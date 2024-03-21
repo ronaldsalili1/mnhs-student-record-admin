@@ -1,3 +1,5 @@
+import config from '../config';
+
 import { objectToQueryString } from './general.js';
 import { removeAuthenticated } from './localStorage.js';
 
@@ -29,7 +31,7 @@ export const get = async ({ uri, query, navigate, location }) => {
     }
 
     try {
-        const response = await fetch(`${import.meta.env.VITE_API}${uri}${queryString}`, {
+        const response = await fetch(`${config.api}${uri}${queryString}`, {
             ...options,
             method: 'GET',
         });
@@ -55,7 +57,7 @@ export const post = async ({ uri, query, body={}, navigate, location }) => {
     }
 
     try {
-        const response = await fetch(`${import.meta.env.VITE_API}${uri}${queryString}`, {
+        const response = await fetch(`${config.api}${uri}${queryString}`, {
             ...options,
             method: 'POST',
             body: JSON.stringify(body),
@@ -82,7 +84,7 @@ export const patch = async ({ uri, query, body={}, navigate, location }) => {
     }
 
     try {
-        const response = await fetch(`${import.meta.env.VITE_API}${uri}${queryString}`, {
+        const response = await fetch(`${config.api}${uri}${queryString}`, {
             ...options,
             method: 'PATCH',
             body: JSON.stringify(body),
