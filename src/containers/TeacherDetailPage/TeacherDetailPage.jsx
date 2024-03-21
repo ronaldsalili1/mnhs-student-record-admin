@@ -16,6 +16,7 @@ const TeacherDetailPage = () => {
     const navigate = useNavigate();
 
     const teacherProps = useTeacherDetail(teacherId);
+    const { teacher } = teacherProps;
 
     useEffect(() => {
         setBreadcrumbItems([
@@ -28,15 +29,15 @@ const TeacherDetailPage = () => {
                 },
             },
             {
-                title: teacherId ? 'Details' : 'Create',
+                title: teacher ? 'Details' : 'Create',
             },
         ]);
 
-        if (!teacherId) {
+        if (!teacher) {
             setTitle('New Teacher');
         } else {
-            // const teacher = dataSource.find(data => data._id === teacherId);
-            // setTitle(teacher?.name);
+            const { last_name, first_name, middle_name, suffix } = teacher || {};
+            setTitle(`${last_name}, ${first_name}${suffix ? ', ' + suffix : '' }${middle_name ? ', ' + middle_name : ''}`);
         }
 
         return () => {
@@ -44,7 +45,7 @@ const TeacherDetailPage = () => {
             setBreadcrumbItems([]);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [teacher]);
 
     useEffect(() => {
         // const student = dataSource.find(data => data._id === studentId);

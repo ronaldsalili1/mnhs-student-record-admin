@@ -34,8 +34,8 @@ const AdministratorDetailPage = () => {
         if (!admin) {
             setTitle('New Administrator');
         } else {
-            const { last_name, first_name, middle_name } = admin || {};
-            setTitle(`${last_name?.toUpperCase()}, ${first_name}${middle_name ? `, ${middle_name}` : ''}`);
+            const { last_name, first_name, middle_name, suffix } = admin || {};
+            setTitle(`${last_name}, ${first_name}${suffix ? ', ' + suffix : '' }${middle_name ? ', ' + middle_name : ''}`);
         }
 
         return () => {

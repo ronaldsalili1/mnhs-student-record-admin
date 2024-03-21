@@ -40,7 +40,7 @@ const TeacherPage = () => {
                     suffix,
                     middle_name,
                 } = record;
-                return `${last_name}, ${first_name}${suffix ? ', ' + suffix : '' }${middle_name ? ', ' + record.middle_name : ''}`;
+                return `${last_name}, ${first_name}${suffix ? ', ' + suffix : '' }${middle_name ? ', ' + middle_name : ''}`;
             },
         },
         {

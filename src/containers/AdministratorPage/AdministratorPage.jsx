@@ -37,8 +37,8 @@ const AdministratorPage = () => {
             dataIndex: 'name',
             key: 'name',
             render: (_, record) => {
-                const { last_name, first_name, middle_name } = record;
-                return `${last_name.toUpperCase()}, ${first_name}${middle_name ? `, ${middle_name}` : ''}`;
+                const { last_name, first_name, middle_name, suffix } = record;
+                return `${last_name}, ${first_name}${suffix ? ', ' + suffix : '' }${middle_name ? ', ' + middle_name : ''}`;
             },
         },
         {
