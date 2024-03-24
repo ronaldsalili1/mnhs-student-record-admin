@@ -1,15 +1,52 @@
-import { Row, Form, Button, Flex, DatePicker, Select, Typography } from 'antd';
+import { useEffect, useRef, useState } from 'react';
+import { Row, Form, Button, Flex, Typography } from 'antd';
+import dayjs from 'dayjs';
 
 import options from '../../../constants/options';
+import SkeletonDatePicker from '../../../components/CustomUI/SkeletonDatePicker';
+import SkeletonSelect from '../../../components/CustomUI/SkeletonSelect';
 
 const { Item } = Form;
 const { Text } = Typography;
 
-const SemesterForm = () => {
+const SemesterForm = (props) => {
+    const formRef = useRef(null);
+    const { loadingSemester, loadingSubmit, semester, createOrUpdateSemester } = props;
+
+    useEffect(() => {
+        const { sy_start_year, sy_end_year } = semester || {};
+        formRef.current?.setFieldsValue({
+            ...semester,
+            ...(sy_start_year && { sy_start_year: dayjs(sy_start_year) }),
+            ...(sy_end_year && { sy_end_year: dayjs(sy_end_year) }),
+        });
+    }, [semester]);
+
+    const disabledDate = (current) => {
+        if (current && syStartYear) {
+            return current && current.year() <= syStartYear.year();
+        }
+
+        return false;
+    };
+
+    const [syStartYear, setSyStartYear] = useState(null);
+
     return (
         <Form
+            ref={formRef}
             layout="vertical"
-            onFinish={values => console.log(values)}
+            onFinish={values => {
+                const { sy_start_year, sy_end_year } = values;
+                createOrUpdateSemester({
+                    semesterId: semester?._id,
+                    fields: {
+                        ...values,
+                        sy_start_year: dayjs(sy_start_year).startOf('year').toISOString(),
+                        sy_end_year: dayjs(sy_end_year).startOf('year').toISOString(),
+                    },
+                });
+            }}
             style={{
                 width: 400,
             }}
@@ -32,11 +69,15 @@ const SemesterForm = () => {
                     },
                 ]}
             >
-                <DatePicker
-                    // onChange={onChange}
+                <SkeletonDatePicker
+                    loading={loadingSemester}
                     placeholder="Select Start Year"
                     picker="year"
                     style={{ width: '100%' }}
+                    onChange={value => {
+                        setSyStartYear(value);
+                        formRef.current?.setFieldValue('sy_end_year', dayjs(value).add(1, 'year'));
+                    }}
                 />
             </Item>
             <Item
@@ -49,32 +90,16 @@ const SemesterForm = () => {
                     },
                 ]}
             >
-                <DatePicker
-                    // onChange={onChange}
+                <SkeletonDatePicker
+                    disabledDate={disabledDate}
+                    loading={loadingSemester}
                     placeholder="Select End Year"
                     picker="year"
                     style={{ width: '100%' }}
                 />
             </Item>
             <Item
-                name="sy_end_year"
-                label="End Year:"
-                rules={[
-                    {
-                        required: true,
-                        message: 'End Year is required',
-                    },
-                ]}
-            >
-                <DatePicker
-                    // onChange={onChange}
-                    placeholder="Select End Year"
-                    picker="year"
-                    style={{ width: '100%' }}
-                />
-            </Item>
-            <Item
-                name="number"
+                name="term"
                 label="Semester:"
                 rules={[
                     {
@@ -83,10 +108,10 @@ const SemesterForm = () => {
                     },
                 ]}
             >
-                <Select
-                    // onChange={onChange}
+                <SkeletonSelect
+                    loading={loadingSemester}
                     placeholder="Select Semester"
-                    options={options.semester}
+                    options={options.semesterTerm}
                 />
             </Item>
             <Item
@@ -99,8 +124,8 @@ const SemesterForm = () => {
                     },
                 ]}
             >
-                <Select
-                    // onChange={onChange}
+                <SkeletonSelect
+                    loading={loadingSemester}
                     placeholder="Select Status"
                     options={options.semesterStatus}
                 />
@@ -108,6 +133,7 @@ const SemesterForm = () => {
             <Item>
                 <Flex justify="end">
                     <Button
+                        loading={loadingSubmit}
                         type="primary"
                         htmlType="submit"
                         style={{ minWidth: 80 }}

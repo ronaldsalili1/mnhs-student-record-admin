@@ -45,7 +45,7 @@ export default {
             value: 'disabled',
         },
     ],
-    semester: [
+    semesterTerm: [
         {
             label: '1st',
             value: 1,
@@ -57,8 +57,8 @@ export default {
     ],
     semesterStatus: [
         {
-            label: 'Current',
-            value: 'current',
+            label: 'Active',
+            value: 'active',
         },
         {
             label: 'Ended',

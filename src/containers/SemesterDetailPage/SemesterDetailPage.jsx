@@ -2,24 +2,12 @@ import { useContext, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { Flex } from 'antd';
+import dayjs from 'dayjs';
 
 import { NavigationContext } from '../../providers/NavigationProvider';
 import SemesterForm from './components/SemesterForm';
+import useSemesterDetail from '../../hooks/SemesterDetailPage/SemesterDetailPage';
 
-const dataSource = [
-    {
-        key: '621d2a6e9bea8f5e982a129d',
-        _id: '621d2a6e9bea8f5e982a129d',
-        school_year: '2023-2024',
-        number: 2,
-    },
-    {
-        key: '621d2a6e9bea8f5e982a129e',
-        _id: '621d2a6e9bea8f5e982a129e',
-        school_year: '2022-2023',
-        number: 1,
-    },
-];
 
 const SemesterDetailPage = () => {
     const layoutState = useContext(NavigationContext);
@@ -27,6 +15,8 @@ const SemesterDetailPage = () => {
 
     const { semesterId } = useParams();
     const navigate = useNavigate();
+    const semesterProps = useSemesterDetail(semesterId);
+    const { semester } = semesterProps;
 
     useEffect(() => {
         setBreadcrumbItems([
@@ -39,17 +29,21 @@ const SemesterDetailPage = () => {
                 },
             },
             {
-                title: semesterId ? 'Details' : 'Create',
+                title: semester ? 'Details' : 'Create',
             },
         ]);
 
-        if (!semesterId) {
+        if (!semester) {
             setTitle('New Semester');
         } else {
-            const semester = dataSource.find(data => data._id === semesterId);
+            const {
+                sy_start_year,
+                sy_end_year,
+                term,
+            } = semester || {};
             let semesterNum = '';
 
-            switch (semester.number) {
+            switch (term) {
                 case 1:
                     semesterNum = '1st';
                     break;
@@ -59,7 +53,7 @@ const SemesterDetailPage = () => {
                 default:
                     break;
             }
-            setTitle(`S.Y. ${semester.school_year} - ${semesterNum} Semester`);
+            setTitle(`S.Y. ${dayjs(sy_start_year).year()} - ${dayjs(sy_end_year).year()} | ${semesterNum} Semester`);
         }
 
         return () => {
@@ -67,11 +61,11 @@ const SemesterDetailPage = () => {
             setBreadcrumbItems([]);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [semester]);
 
     return (
         <Flex justify="center">
-            <SemesterForm/>
+            <SemesterForm {...semesterProps}/>
         </Flex>
     );
 };

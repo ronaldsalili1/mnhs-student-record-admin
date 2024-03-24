@@ -1,18 +1,25 @@
 import { useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Table, Typography, Button, Flex, Grid } from 'antd';
 import { PlusSquareFilled } from '@ant-design/icons';
+import dayjs from 'dayjs';
 
 import { NavigationContext } from '../../providers/NavigationProvider';
+import useSemester from '../../hooks/useSemester';
+import { getParamsFromUrl, objectToQueryString } from '../../helpers/general';
+import options from '../../constants/options';
 
-const { Link } = Typography;
+const { Link, Text } = Typography;
 
 const SemesterPage = () => {
     const layoutState = useContext(NavigationContext);
     const { setTitle } = layoutState;
     
+    const query = getParamsFromUrl();
+    const location = useLocation();
     const navigate = useNavigate();
     const { xs } = Grid.useBreakpoint();
+    const { semesters, loadingSemesters, getSemesters, page, limit, total }= useSemester();
 
     useEffect(() => {
         setTitle('Semesters');
@@ -26,11 +33,15 @@ const SemesterPage = () => {
             title: 'School Year (SY)',
             dataIndex: 'school_year',
             key: 'school_year',
+            render: (_, record) => {
+                const { sy_start_year, sy_end_year } = record || {};
+                return `${dayjs(sy_start_year).year()} - ${dayjs(sy_end_year).year()}`;
+            },
         },
         {
             title: 'Semester',
-            dataIndex: 'number',
-            key: 'number',
+            dataIndex: 'term',
+            key: 'term',
             render: data => {
                 let semester = '';
 
@@ -49,6 +60,19 @@ const SemesterPage = () => {
             },
         },
         {
+            title: 'Status',
+            dataIndex: 'status',
+            key: 'status',
+            render: data => {
+                const status = options.semesterStatus.find(status => status.value === data);
+                if (data !== 'active') {
+                    return status.label;
+                }
+
+                return <Text type="success">{status.label}</Text>;
+            },
+        },
+        {
             title: 'Action',
             dataIndex: 'action',
             key: 'action',
@@ -61,21 +85,6 @@ const SemesterPage = () => {
                     </Link>   
                 );
             },
-        },
-    ];
-
-    const dataSource = [
-        {
-            key: '621d2a6e9bea8f5e982a129d',
-            _id: '621d2a6e9bea8f5e982a129d',
-            school_year: '2023-2024',
-            number: 2,
-        },
-        {
-            key: '621d2a6e9bea8f5e982a129e',
-            _id: '621d2a6e9bea8f5e982a129e',
-            school_year: '2022-2023',
-            number: 1,
         },
     ];
 
@@ -98,9 +107,25 @@ const SemesterPage = () => {
                 </Button>
             </Flex>
             <Table
+                loading={loadingSemesters}
                 scroll={ { x: true } }
-                dataSource={dataSource}
+                dataSource={semesters.map(semester => {
+                    return { ...semester, key: semester._id };
+                })}
                 columns={columns}
+                pagination={{
+                    current: page,
+                    showSizeChanger: true,
+                    onChange: (current, pageSize) => {
+                        const queryObj = { ...query, page: current, limit: pageSize };
+                        getSemesters(queryObj);
+                        const queryString = objectToQueryString(queryObj);
+                        navigate(`${location.pathname}${queryString}`);
+                    },
+                    position: ['bottomRight'],
+                    total,
+                    pageSize: limit,
+                }}
             />
         </>
     );
