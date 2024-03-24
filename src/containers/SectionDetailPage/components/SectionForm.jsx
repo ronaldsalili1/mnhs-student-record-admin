@@ -11,7 +11,7 @@ const { Text } = Typography;
 
 const SubjectForm = (props) => {
     const formRef = useRef(null);
-    const { loadingSection, loadingTeachers, section, teachers, createOrUpdateSection } = props;
+    const { loadingSection, loadingTeachers, loadingSubmit, section, teachers, createOrUpdateSection } = props;
 
     useEffect(() => {
         formRef.current?.setFieldsValue(section);
@@ -92,6 +92,7 @@ const SubjectForm = (props) => {
             <Item>
                 <Flex justify="end">
                     <Button
+                        loading={loadingSubmit}
                         type="primary"
                         htmlType="submit"
                         style={{ minWidth: 80 }}

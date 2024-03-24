@@ -1,32 +1,22 @@
 import { useContext, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { Flex } from 'antd';
 
 import { NavigationContext } from '../../providers/NavigationProvider';
-import SubjectForm from './components/SubjectForm';
+import useSubjectDetail from '../../hooks/SubjectDetailPage/useSubjectDetail';
+import DetailTab from '../../components/DetailTab';
+import SubjectBasicPage from './SubjectBasicPage/SubjectBasicPage';
+import SubjectTeacherPage from './SubjectTeacherPage/SubjectTeacherPage';
 
-const dataSource = [
-    {
-        key: '621d2a6e9bea8f5e982a129d',
-        _id: '621d2a6e9bea8f5e982a129d',
-        name: 'Subject A',
-        type: 'core',
-    },
-    {
-        key: '621d2a6e9bea8f5e982a129e',
-        _id: '621d2a6e9bea8f5e982a129e',
-        name: 'Subject B',
-        type: 'applied',
-    },
-];
 
 const SubjectDetailPage = () => {
     const layoutState = useContext(NavigationContext);
     const { setBreadcrumbItems, setTitle } = layoutState;
 
-    const { subjectId } = useParams();
+    const { subjectId, tab } = useParams();
     const navigate = useNavigate();
+    const subjectProps = useSubjectDetail(subjectId);
+    const { subject } = subjectProps;
 
     useEffect(() => {
         setBreadcrumbItems([
@@ -39,14 +29,13 @@ const SubjectDetailPage = () => {
                 },
             },
             {
-                title: subjectId ? 'Details' : 'Create',
+                title: subject ? 'Details' : 'Create',
             },
         ]);
 
-        if (!subjectId) {
+        if (!subject) {
             setTitle('New Subject');
         } else {
-            const subject = dataSource.find(data => data._id === subjectId);
             setTitle(subject.name);
         }
 
@@ -55,12 +44,29 @@ const SubjectDetailPage = () => {
             setBreadcrumbItems([]);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [subject]);
+
+    if (!subjectId) {
+        return <SubjectBasicPage {...subjectProps}/>;
+    }
 
     return (
-        <Flex justify="center">
-            <SubjectForm/>
-        </Flex>
+        <DetailTab
+            activeKey={tab}
+            items={[
+                {
+                    key: 'information',
+                    label: 'Information',
+                    children: <SubjectBasicPage {...subjectProps}/>,
+                },
+                {
+                    key: 'subject-teachers',
+                    label: 'Teachers',
+                    children: <SubjectTeacherPage />,
+                },
+            ]}
+            onTabClick={value => navigate(`/subjects/${subjectId}/${value}`)}
+        />
     );
 };
 

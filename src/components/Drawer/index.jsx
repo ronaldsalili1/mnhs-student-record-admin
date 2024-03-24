@@ -76,12 +76,12 @@ const Drawer = ({ collapsed, setCollapsed }) => {
 
     return (
         <Sider
-            theme="light"
+            theme="dark"
             collapsible
             collapsed={collapsed}
             onCollapse={() => setCollapsed(!collapsed)}
             breakpoint="lg"
-            width={280}
+            width={230}
             style={{
                 position: 'sticky',
                 top: 0,
@@ -100,6 +100,7 @@ const Drawer = ({ collapsed, setCollapsed }) => {
                 />
             </Flex>
             <Menu
+                theme="dark"
                 defaultSelectedKeys={['1']}
                 defaultOpenKeys={['sub1']}
                 mode="inline"

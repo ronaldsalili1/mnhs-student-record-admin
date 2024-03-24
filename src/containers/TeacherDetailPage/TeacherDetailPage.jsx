@@ -69,7 +69,7 @@ const TeacherDetailPage = () => {
                     children: <TeacherBasicPage {...teacherProps}/>,
                 },
                 {
-                    key: 'subjects',
+                    key: 'teacher-subjects',
                     label: 'Subjects',
                     children: <TeacherSubjectPage />,
                 },

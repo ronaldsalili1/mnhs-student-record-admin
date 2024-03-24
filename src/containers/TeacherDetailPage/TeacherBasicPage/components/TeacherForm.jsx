@@ -8,7 +8,7 @@ import SkeletonSelect from '../../../../components/CustomUI/SkeletonSelect';
 const { Item } = Form;
 const { Text } = Typography;
 
-const TeacherForm = ({ teacher, loading, createOrUpdateTeacher }) => {
+const TeacherForm = ({ teacher, loading, loadingSubmit, createOrUpdateTeacher }) => {
     const formRef = useRef(null);
 
     useEffect(() => {
@@ -120,6 +120,7 @@ const TeacherForm = ({ teacher, loading, createOrUpdateTeacher }) => {
             <Item>
                 <Flex justify="end">
                     <Button
+                        loading={loadingSubmit}
                         type="primary"
                         htmlType="submit"
                         style={{ minWidth: 80 }}

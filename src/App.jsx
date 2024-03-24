@@ -130,7 +130,7 @@ const router = createBrowserRouter(
 
                 {/* Subject Pages */}
                 <Route
-                    path="subjects/:subjectId"
+                    path="subjects/:subjectId/:tab"
                     element={<SubjectDetailPage/>}
                 />
                 <Route

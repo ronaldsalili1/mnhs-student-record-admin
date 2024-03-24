@@ -1,11 +1,12 @@
 import { useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Table, Typography, Button, Flex, Grid } from 'antd';
 import { PlusSquareFilled } from '@ant-design/icons';
 
 import { NavigationContext } from '../../providers/NavigationProvider';
 import SubjectSearchForm from './components/SubjectSearchForm';
-import { capitalizeFirstLetter } from '../../helpers/general';
+import { capitalizeFirstLetter, getParamsFromUrl, objectToQueryString } from '../../helpers/general';
+import useSubject from '../../hooks/useSubject';
 
 const { Link } = Typography;
 
@@ -13,8 +14,11 @@ const SubjectPage = () => {
     const layoutState = useContext(NavigationContext);
     const { setTitle } = layoutState;
     
+    const query = getParamsFromUrl();
     const navigate = useNavigate();
+    const location = useLocation();
     const { xs } = Grid.useBreakpoint();
+    const { loadingSubjects, subjects, page, total, limit, getSubjects } = useSubject();
 
     useEffect(() => {
         setTitle('Subjects');
@@ -44,27 +48,12 @@ const SubjectPage = () => {
             render: (_, record) => {
                 return (
                     <Link
-                        onClick={() => navigate(`/subjects/${record._id}`)}
+                        onClick={() => navigate(`/subjects/${record._id}/information`)}
                     >
 						Edit
                     </Link>   
                 );
             },
-        },
-    ];
-
-    const dataSource = [
-        {
-            key: '621d2a6e9bea8f5e982a129d',
-            _id: '621d2a6e9bea8f5e982a129d',
-            name: 'Subject A',
-            type: 'core',
-        },
-        {
-            key: '621d2a6e9bea8f5e982a129e',
-            _id: '621d2a6e9bea8f5e982a129e',
-            name: 'Subject B',
-            type: 'applied',
         },
     ];
 
@@ -76,7 +65,7 @@ const SubjectPage = () => {
                 gap={10}
                 style={{ margin: '10px 0px' }}
             >
-                <SubjectSearchForm/>
+                <SubjectSearchForm getSubjects={getSubjects}/>
                 <Button
                     type="primary"
                     icon={<PlusSquareFilled />}
@@ -88,9 +77,25 @@ const SubjectPage = () => {
                 </Button>
             </Flex>
             <Table
+                loading={loadingSubjects}
                 scroll={ { x: true } }
-                dataSource={dataSource}
+                dataSource={subjects.map(subject => {
+                    return { ...subject, key: subject._id };
+                })}
                 columns={columns}
+                pagination={{
+                    current: page,
+                    showSizeChanger: true,
+                    onChange: (current, pageSize) => {
+                        const queryObj = { ...query, page: current, limit: pageSize };
+                        getSubjects(queryObj);
+                        const queryString = objectToQueryString(queryObj);
+                        navigate(`${location.pathname}${queryString}`);
+                    },
+                    position: ['bottomRight'],
+                    total,
+                    pageSize: limit,
+                }}
             />
         </>
     );
