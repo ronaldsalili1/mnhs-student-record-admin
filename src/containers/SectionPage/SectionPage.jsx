@@ -1,9 +1,12 @@
 import { useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Table, Typography, Button, Flex, Grid } from 'antd';
 import { PlusSquareFilled } from '@ant-design/icons';
 
 import { NavigationContext } from '../../providers/NavigationProvider';
+import useSection from '../../hooks/useSection';
+import { getParamsFromUrl, objectToQueryString } from '../../helpers/general';
+import SectionSearchForm from './components/SectionSearchForm';
 
 const { Link } = Typography;
 
@@ -13,6 +16,10 @@ const SectionPage = () => {
 
     const navigate = useNavigate();
     const { xs } = Grid.useBreakpoint();
+    const query = getParamsFromUrl();
+    const location = useLocation();
+    const { loadingSections, loadingTeachers, teachers, sections, total, page, limit, getSections } = useSection();
+    console.log('🚀 ~ teachers:', teachers);
 
     useEffect(() => {
         setTitle('Sections');
@@ -20,23 +27,6 @@ const SectionPage = () => {
         return () => setTitle(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
-    const dataSource = [
-        {
-            key: '621d2a6e9bea8f5e982a129d',
-            _id: '621d2a6e9bea8f5e982a129d',
-            grade_level: 12,
-            name: 'Wonderful',
-            adviser: 'Teacher A',
-        },
-        {
-            key: '621d2a6e9bea8f5e982a129e',
-            _id: '621d2a6e9bea8f5e982a129e',
-            grade_level: 11,
-            name: 'Beautiful',
-            adviser: 'Teacher B',
-        },
-    ];
 
     const columns = [
         {
@@ -53,6 +43,10 @@ const SectionPage = () => {
             title: 'Adviser',
             dataIndex: 'adviser',
             key: 'adviser',
+            render: (_, record) => {
+                const { last_name, first_name, suffix, middle_name } = record?.teacher || {};
+                return `${last_name}, ${first_name}${suffix ? ', ' + suffix : '' }${middle_name ? ', ' + middle_name : ''}`;
+            },
         },
         {
             title: 'Action',
@@ -78,6 +72,11 @@ const SectionPage = () => {
                 gap={10}
                 style={{ margin: '10px 0px' }}
             >
+                <SectionSearchForm
+                    teachers={teachers}
+                    loadingTeachers={loadingTeachers}
+                    getSections={getSections}
+                />
                 <Button
                     type="primary"
                     icon={<PlusSquareFilled />}
@@ -89,9 +88,25 @@ const SectionPage = () => {
                 </Button>
             </Flex>
             <Table
+                loading={loadingSections}
                 scroll={ { x: true } }
-                dataSource={dataSource}
+                dataSource={sections.map(section => {
+                    return { ...section, key: section._id };
+                })}
                 columns={columns}
+                pagination={{
+                    current: page,
+                    showSizeChanger: true,
+                    onChange: (current, pageSize) => {
+                        const queryObj = { ...query, page: current, limit: pageSize };
+                        getSections(queryObj);
+                        const queryString = objectToQueryString(queryObj);
+                        navigate(`${location.pathname}${queryString}`);
+                    },
+                    position: ['bottomRight'],
+                    total,
+                    pageSize: limit,
+                }}
             />
         </>
     );

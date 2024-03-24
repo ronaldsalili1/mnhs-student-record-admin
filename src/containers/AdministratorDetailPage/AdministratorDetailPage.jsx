@@ -14,7 +14,8 @@ const AdministratorDetailPage = () => {
     const { adminId } = useParams();
     const navigate = useNavigate();
 
-    const { admin, loading, createOrUpdateAdministrator } = useAdministratorDetail(adminId);
+    const adminProps = useAdministratorDetail(adminId);
+    const { admin } = adminProps;
 
     useEffect(() => {
         setBreadcrumbItems([
@@ -47,11 +48,7 @@ const AdministratorDetailPage = () => {
 
     return (
         <Flex justify="center">
-            <AdministratorForm
-                admin={admin}
-                loading={loading}
-                createOrUpdateAdministrator={createOrUpdateAdministrator}
-            />
+            <AdministratorForm {...adminProps}/>
         </Flex>
     );
 };

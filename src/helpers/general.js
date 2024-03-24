@@ -54,3 +54,16 @@ export const getParamsFromUrl = () => {
     // Return the object of query string parameters.
     return params;
 };
+
+/**
+ * 
+ * @param {string} input 
+ * @param {Object} option 
+ */
+export const filterOption = (input, option) => {
+    const lowerCasedLabel = (option?.label ?? '').toLowerCase();
+
+    return lowerCasedLabel.includes(input.toLowerCase());
+};
+
+  

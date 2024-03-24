@@ -97,4 +97,14 @@ export default {
             value: 'superadmin',
         },
     ],
+    gradeLevel: [
+        {
+            label: 'Grade 11',
+            value: '11',
+        },
+        {
+            label: 'Grade 12',
+            value: '12',
+        },
+    ],
 };

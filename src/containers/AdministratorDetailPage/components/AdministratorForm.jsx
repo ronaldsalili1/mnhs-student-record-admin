@@ -12,10 +12,11 @@ const { Item } = Form;
 const { Text } = Typography;
 const { List } = Form;
 
-const AdministratorForm = ({ loading, admin, createOrUpdateAdministrator }) => {
+const AdministratorForm = (props) => {
     const formRef = useRef(null);
     const { token } = theme.useToken();
     const { admin: loggedAdmin } = useContext(AuthContext);
+    const { loading, loadingSubmit, admin, createOrUpdateAdministrator } = props;
 
     const [selectedRoles, setSelectedRoles] = useState([undefined]);
     const [currentPass, setCurrentPass] = useState('');
@@ -308,10 +309,10 @@ const AdministratorForm = ({ loading, admin, createOrUpdateAdministrator }) => {
                 <Item>
                     <Flex justify="end">
                         <Button
+                            loading={loadingSubmit}
                             type="primary"
                             htmlType="submit"
                             style={{ minWidth: 80 }}
-                            disabled={disabled}
                         >
                             Save
                         </Button>

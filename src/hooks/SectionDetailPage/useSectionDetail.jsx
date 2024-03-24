@@ -4,11 +4,13 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { get, post, patch } from '../../helpers/request';
 import { NavigationContext } from '../../providers/NavigationProvider';
 
-const useAdministratorDetail = (adminId) => {
+const useSectionDetail = (sectionId) => {
     const [meta, setMeta] = useState(null);
-    const [loading, setLoading] = useState(false);
+    const [loadingSection, setLoadingSection] = useState(false);
     const [loadingSubmit, setLoadingSubmit] = useState(false);
-    const [admin, setAdmin] = useState(null);
+    const [section, setSection] = useState(null);
+    const [teachers, setTeachers] = useState([]);
+    const [loadingTeachers, setLoadingTeachers] = useState(false);
 
     const layoutState = useContext(NavigationContext);
     const { notificationApi } = layoutState;
@@ -20,40 +22,54 @@ const useAdministratorDetail = (adminId) => {
         setMeta(null);
     };
 
-    const getAdministratorById = async () => {
-        setLoading(true);
+    const getTeacherOptions = async () => {
+        setLoadingTeachers(true);
 
-        const response = await get({ uri: `/admin/admins/${adminId}`, navigate, location });
+        const response = await get({ uri: '/admin/teachers/all/options', navigate, location });
         if (response?.meta?.code !== 200) {
             setMeta(response?.meta);
-            setLoading(false);
+            setLoadingTeachers(false);
             return;
         }
 
-        setAdmin(response?.data?.admin);
-        setLoading(false);
+        setTeachers(response?.data?.teachers);
+        setLoadingTeachers(false);
     };
 
-    const createOrUpdateAdministrator = async ({ adminId, fields }) => {
+    const getSectionById = async () => {
+        setLoadingSection(true);
+
+        const response = await get({ uri: `/admin/sections/${sectionId}`, navigate, location });
+        if (response?.meta?.code !== 200) {
+            setMeta(response?.meta);
+            setLoadingSection(false);
+            return;
+        }
+
+        setSection(response?.data?.section);
+        setLoadingSection(false);
+    };
+
+    const createOrUpdateSection = async ({ sectionId, fields }) => {
         setLoadingSubmit(true);
 
         const body = {
-            admin: {
+            section: {
                 ...fields,
             },
         };
 
         let response;
-        if (adminId) {
+        if (sectionId) {
             response = await patch({
-                uri: `/admin/admins/${adminId}`,
+                uri: `/admin/sections/${sectionId}`,
                 body,
                 navigate,
                 location,
             });
         } else {
             response = await post({
-                uri: '/admin/admins',
+                uri: '/admin/sections',
                 body,
                 navigate,
                 location,
@@ -66,20 +82,22 @@ const useAdministratorDetail = (adminId) => {
             return;
         }
 
-        const { admin } = response.data;
+        const { section } = response.data;
 
         setMeta(response.meta);
-        setAdmin(admin);
+        setSection(section);
         setLoadingSubmit(false);
 
-        navigate(`/administrators/${admin._id}`);
+        navigate(`/sections/${section._id}`);
     };
 
     useEffect(() => {
-        adminId && getAdministratorById();
+        getTeacherOptions();
+        sectionId && getSectionById();
 
         return () => {
-            setAdmin(null);
+            setSection(null);
+            setTeachers([]);
             setMeta(null);
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -101,12 +119,14 @@ const useAdministratorDetail = (adminId) => {
     return {
         meta,
         resetMeta,
-        getAdministratorById,
-        createOrUpdateAdministrator,
-        loading,
+        getSectionById,
+        createOrUpdateSection,
+        loadingSection,
         loadingSubmit,
-        admin,
+        section,
+        loadingTeachers,
+        teachers,
     };
 };
 
-export default useAdministratorDetail;
+export default useSectionDetail;

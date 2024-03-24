@@ -5,23 +5,8 @@ import { Flex } from 'antd';
 
 import { NavigationContext } from '../../providers/NavigationProvider';
 import SectionForm from './components/SectionForm';
+import useSectionDetail from '../../hooks/SectionDetailPage/useSectionDetail';
 
-const dataSource = [
-    {
-        key: '621d2a6e9bea8f5e982a129d',
-        _id: '621d2a6e9bea8f5e982a129d',
-        grade_level: 12,
-        name: 'Wonderful',
-        adviser: 'Teacher A',
-    },
-    {
-        key: '621d2a6e9bea8f5e982a129e',
-        _id: '621d2a6e9bea8f5e982a129e',
-        grade_level: 11,
-        name: 'Beautiful',
-        adviser: 'Teacher B',
-    },
-];
 
 const SectionDetailPage = () => {
     const layoutState = useContext(NavigationContext);
@@ -29,6 +14,9 @@ const SectionDetailPage = () => {
 
     const { sectionId } = useParams();
     const navigate = useNavigate();
+
+    const sectionDetailProps = useSectionDetail(sectionId);
+    const { section } = sectionDetailProps;
 
     useEffect(() => {
         setBreadcrumbItems([
@@ -41,15 +29,14 @@ const SectionDetailPage = () => {
                 },
             },
             {
-                title: sectionId ? 'Details' : 'Create',
+                title: section ? 'Details' : 'Create',
             },
         ]);
 
-        if (!sectionId) {
+        if (!section) {
             setTitle('New Section');
         } else {
-            const subject = dataSource.find(data => data._id === sectionId);
-            setTitle(`Grade ${subject.grade_level} - ${subject.name}`);
+            setTitle(`Grade ${section.grade_level} - ${section.name}`);
         }
 
         return () => {
@@ -57,11 +44,11 @@ const SectionDetailPage = () => {
             setBreadcrumbItems([]);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [section]);
 
     return (
         <Flex justify="center">
-            <SectionForm/>
+            <SectionForm {...sectionDetailProps}/>
         </Flex>
     );
 };

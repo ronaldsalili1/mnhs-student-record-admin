@@ -1,19 +1,27 @@
-import { Row, Form, Button, Input, Flex, Select, Typography, theme } from 'antd';
-import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { Row, Form, Button, Flex, Typography } from 'antd';
 
 import options from '../../../constants/options';
+import SkeletonSelect from '../../../components/CustomUI/SkeletonSelect';
+import SkeletonInput from '../../../components/CustomUI/SkeletonInput';
+import { filterOption } from '../../../helpers/general';
+import { useEffect, useRef } from 'react';
 
 const { Item } = Form;
 const { Text } = Typography;
-const { List } = Form;
 
-const SubjectForm = () => {
-    const { token } = theme.useToken();
+const SubjectForm = (props) => {
+    const formRef = useRef(null);
+    const { loadingSection, loadingTeachers, section, teachers, createOrUpdateSection } = props;
+
+    useEffect(() => {
+        formRef.current?.setFieldsValue(section);
+    }, [section]);
 
     return (
         <Form
+            ref={formRef}
             layout="vertical"
-            onFinish={values => console.log(values)}
+            onFinish={values => createOrUpdateSection({ sectionId: section?._id, fields: values })}
             style={{
                 width: 400,
             }}
@@ -36,7 +44,11 @@ const SubjectForm = () => {
                     },
                 ]}
             >
-                <Select placeholder="Enter Name"/>
+                <SkeletonSelect
+                    loading={loadingSection}
+                    placeholder="Select Grade Level"
+                    options={options.gradeLevel}
+                />
             </Item>
             <Item
                 name="name"
@@ -48,10 +60,13 @@ const SubjectForm = () => {
                     },
                 ]}
             >
-                <Input placeholder="Enter Name"/>
+                <SkeletonInput
+                    loading={loadingSection}
+                    placeholder="Enter Name"
+                />
             </Item>
             <Item
-                name="adviser"
+                name="teacher_id"
                 label="Adviser:"
                 rules={[
                     {
@@ -60,74 +75,20 @@ const SubjectForm = () => {
                     },
                 ]}
             >
-                <Select
-                    placeholder="Enter Adviser"
+                <SkeletonSelect
+                    loading={loadingSection || loadingTeachers}
+                    placeholder="Select Adviser"
+                    showSearch
+                    filterOption={filterOption}
+                    options={teachers.map(teacher => {
+                        const { _id, last_name, first_name, suffix, middle_name } = teacher || {};
+                        return ({
+                            label: `${last_name}, ${first_name}${suffix ? ', ' + suffix : '' }${middle_name ? ', ' + middle_name : ''}`,
+                            value: _id,
+                        });
+                    })}
                 />
             </Item>
-            {/* <List name="teachers">
-                {(fields, { add, remove }) => (
-                    <>
-                        <div style={{ marginBottom: 8 }}>
-                            <Text>Teachers:</Text>
-                        </div>
-                        {fields.map(({ key, name, ...restField }) => (
-                            <Flex
-                                key={key}
-                                align="center"
-                                gap={10}
-                                style={{ marginBottom: 5 }}
-                            >
-                                <Item
-                                    {...restField}
-                                    name={[name]}
-                                    rules={[
-                                        {
-                                            required: true,
-                                            message: 'Teacher is required',
-                                        },
-                                    ]}
-                                    style={{ margin: 0, width: '100%' }}
-                                >
-                                    <Select
-                                        options={[
-                                            {
-                                                label: 'Teacher A',
-                                                value: 'teacher_a',
-                                            },
-                                            {
-                                                label: 'Teacher B',
-                                                value: 'teacher_b',
-                                            },
-                                            {
-                                                label: 'Teacher C',
-                                                value: 'teacher_c',
-                                            },
-                                            {
-                                                label: 'Teacher D',
-                                                value: 'teacher_d',
-                                            },
-                                        ]}
-                                    />
-                                </Item>
-                                <MinusCircleOutlined
-                                    onClick={() => remove(name)}
-                                    style={{ color: token.colorError }}
-                                />
-                            </Flex>
-                        ))}
-                        <Item>
-                            <Button
-                                type="dashed"
-                                onClick={() => add()}
-                                block
-                                icon={<PlusOutlined />}
-                            >
-                                Add Teacher
-                            </Button>
-                        </Item>
-                    </>
-                )}
-            </List> */}
             <Item>
                 <Flex justify="end">
                     <Button
