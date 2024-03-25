@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Layout, Menu, Flex, theme } from 'antd';
+import { Layout, Menu, Flex } from 'antd';
 import {
     UserOutlined,
     ClockCircleOutlined,
@@ -65,7 +65,6 @@ const getActiveItem = ({ pathname }) => {
 };
 
 const Drawer = ({ collapsed, setCollapsed }) => {
-    const { token } = theme.useToken();
     const { pathname } = useLocation();
     const navigate = useNavigate();
 
@@ -76,12 +75,12 @@ const Drawer = ({ collapsed, setCollapsed }) => {
 
     return (
         <Sider
-            theme="dark"
+            theme="light"
             collapsible
             collapsed={collapsed}
             onCollapse={() => setCollapsed(!collapsed)}
             breakpoint="lg"
-            width={230}
+            width={300}
             style={{
                 position: 'sticky',
                 top: 0,
@@ -91,16 +90,16 @@ const Drawer = ({ collapsed, setCollapsed }) => {
         >
             <Flex
                 justify="center"
-                style={{ margin: '10px 0px' }}
+                style={{ margin: '20px 0px' }}
             >
                 <img
                     src={mnhsLogo}
                     alt="MNHS Logo"
-                    style={{ height: 100 }}
+                    style={{ height: collapsed ? 70 : 100 }}
                 />
             </Flex>
             <Menu
-                theme="dark"
+                theme="light"
                 defaultSelectedKeys={['1']}
                 defaultOpenKeys={['sub1']}
                 mode="inline"

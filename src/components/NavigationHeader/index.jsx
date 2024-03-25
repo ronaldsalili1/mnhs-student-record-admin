@@ -35,8 +35,9 @@ const NavigationHeader = () => {
                 style={{ height: '100%' }}
             >
                 <Title
+                    className="header-title"
                     level={1}
-                    style={{ fontSize: 20, color: token.colorPrimary }}
+                    style={{ fontSize: 20, color: token.colorNeutral }}
                 >
                     MNHS Student Records
                 </Title>
