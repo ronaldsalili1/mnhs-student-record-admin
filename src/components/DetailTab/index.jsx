@@ -6,7 +6,9 @@ const DetailTab = ({ items, activeKey, onTabClick }) => {
             ...item,
             children: (
                 <Flex justify="center">
-                    {item.children}
+                    <div className="tab-content">
+                        {item.children}
+                    </div>
                 </Flex>
             ),
         });
@@ -15,7 +17,8 @@ const DetailTab = ({ items, activeKey, onTabClick }) => {
     return (
         <Tabs
             activeKey={activeKey}
-            tabPosition="right"
+            tabPosition="top"
+            type="card"
             items={styledItems}
             onTabClick={onTabClick}
             style={{ width: '100%' }}

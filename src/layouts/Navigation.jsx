@@ -36,7 +36,13 @@ const Navigation = ({ breadcrumb=false }) => {
                     />
                     <Layout>
                         <NavigationHeader/>
-                        <Content style={{ padding: '15px 15px 0px' }}>
+                        <Content
+                            className="nav-content"
+                            style={{
+                                padding: '15px 15px 0px 315px',
+                                marginTop: 64,
+                            }}
+                        >
                             <Card title={title}>
                                 {
                                     breadcrumb &&

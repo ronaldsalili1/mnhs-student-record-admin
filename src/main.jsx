@@ -22,6 +22,7 @@ const theme = {
         Layout: {
             lightSiderBg: colorSider,
             lightTriggerBg: colorSider,
+            headerBg: colorSider,
         },
         Menu: {
             itemHeight: 59,

@@ -1,8 +1,7 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Table, Typography, Button, Flex, Grid } from 'antd';
 import { PlusSquareFilled } from '@ant-design/icons';
-import dayjs from 'dayjs';
 
 import { NavigationContext } from '../../providers/NavigationProvider';
 import useSemester from '../../hooks/useSemester';
@@ -21,6 +20,17 @@ const SemesterPage = () => {
     const { xs } = Grid.useBreakpoint();
     const { semesters, loadingSemesters, getSemesters, page, limit, total }= useSemester();
 
+    const semesterList = useMemo(() => {
+        if (semesters.length === 0) {
+            return [];
+        }
+        const semWithOActive = semesters.filter(semester => semester.status !== 'active');
+        const activeSemester = semesters.find(semester => semester.status === 'active');
+        
+        return [activeSemester, ...semWithOActive].map(sem => ({ ...sem, key: sem._id }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [semesters]);
+
     useEffect(() => {
         setTitle('Semesters');
 
@@ -35,7 +45,7 @@ const SemesterPage = () => {
             key: 'school_year',
             render: (_, record) => {
                 const { sy_start_year, sy_end_year } = record || {};
-                return `${dayjs(sy_start_year).year()} - ${dayjs(sy_end_year).year()}`;
+                return `${sy_start_year} - ${sy_end_year}`;
             },
         },
         {
@@ -109,9 +119,7 @@ const SemesterPage = () => {
             <Table
                 loading={loadingSemesters}
                 scroll={ { x: true } }
-                dataSource={semesters.map(semester => {
-                    return { ...semester, key: semester._id };
-                })}
+                dataSource={semesterList}
                 columns={columns}
                 pagination={{
                     current: page,

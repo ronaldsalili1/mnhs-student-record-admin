@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import options from '../../../constants/options';
 import SkeletonDatePicker from '../../../components/CustomUI/SkeletonDatePicker';
 import SkeletonSelect from '../../../components/CustomUI/SkeletonSelect';
+import SkeletonInputNumber from '../../../components/CustomUI/SkeletonInputNumber';
 
 const { Item } = Form;
 const { Text } = Typography;
@@ -12,38 +13,37 @@ const { Text } = Typography;
 const SemesterForm = (props) => {
     const formRef = useRef(null);
     const { loadingSemester, loadingSubmit, semester, createOrUpdateSemester } = props;
+    const [syStartAt, setSyStartAt] = useState(null);
 
     useEffect(() => {
-        const { sy_start_year, sy_end_year } = semester || {};
+        const { start_at, end_at } = semester || {};
         formRef.current?.setFieldsValue({
             ...semester,
-            ...(sy_start_year && { sy_start_year: dayjs(sy_start_year) }),
-            ...(sy_end_year && { sy_end_year: dayjs(sy_end_year) }),
+            ...(start_at && { start_at: dayjs(start_at) }),
+            ...(end_at && { end_at: dayjs(end_at) }),
         });
     }, [semester]);
 
     const disabledDate = (current) => {
-        if (current && syStartYear) {
-            return current && current.year() <= syStartYear.year();
+        if (current && syStartAt) {
+            return current && current.subtract(1, 'month') <= syStartAt;
         }
 
         return false;
     };
-
-    const [syStartYear, setSyStartYear] = useState(null);
 
     return (
         <Form
             ref={formRef}
             layout="vertical"
             onFinish={values => {
-                const { sy_start_year, sy_end_year } = values;
+                const { start_at, end_at } = values;
                 createOrUpdateSemester({
                     semesterId: semester?._id,
                     fields: {
                         ...values,
-                        sy_start_year: dayjs(sy_start_year).startOf('year').toISOString(),
-                        sy_end_year: dayjs(sy_end_year).startOf('year').toISOString(),
+                        start_at: dayjs(start_at).startOf('month').toISOString(),
+                        end_at: dayjs(end_at).endOf('month').toISOString(),
                     },
                 });
             }}
@@ -60,41 +60,86 @@ const SemesterForm = (props) => {
                 </Text>
             </Row>
             <Item
-                name="sy_start_year"
-                label="Start Year:"
+                label="School Year:"
+                required
+                style={{ margin: 0 }}
+            >
+                <Flex
+                    justify="space-between"
+                    gap={7}
+                >
+                    <Item
+                        name="sy_start_year"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Start Year is required',
+                            },
+                        ]}
+                    >
+                        <SkeletonInputNumber
+                            loading={loadingSemester}
+                            placeholder="Enter Start Year"
+                            style={{ width: '100%' }}
+                            onChange={value => {
+                                formRef.current?.setFieldValue('sy_end_year', value ? value + 1 : null);
+                            }}
+                        />
+                    </Item>
+                    <span style={{ marginTop: 4 }}> - </span>
+                    <Item
+                        name="sy_end_year"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'End Year is required',
+                            },
+                        ]}
+                    >
+                        <SkeletonInputNumber
+                            loading={loadingSemester}
+                            placeholder="Enter End Year"
+                            style={{ width: '100%' }}
+                        />
+                    </Item>
+                </Flex>
+            </Item>
+            <Item
+                name="start_at"
+                label="Start At (YYYY-MM):"
                 rules={[
                     {
                         required: true,
-                        message: 'Start Year is required',
+                        message: 'Start At is required',
                     },
                 ]}
             >
                 <SkeletonDatePicker
                     loading={loadingSemester}
-                    placeholder="Select Start Year"
-                    picker="year"
+                    placeholder="Select Start At"
+                    picker="month"
                     style={{ width: '100%' }}
                     onChange={value => {
-                        setSyStartYear(value);
-                        formRef.current?.setFieldValue('sy_end_year', dayjs(value).add(1, 'year'));
+                        setSyStartAt(value);
+                        formRef.current?.setFieldValue('end_at', value ? dayjs(value).add(5, 'month') : null);
                     }}
                 />
             </Item>
             <Item
-                name="sy_end_year"
-                label="End Year:"
+                name="end_at"
+                label="End At (YYYY-MM):"
                 rules={[
                     {
                         required: true,
-                        message: 'End Year is required',
+                        message: 'End At is required',
                     },
                 ]}
             >
                 <SkeletonDatePicker
                     disabledDate={disabledDate}
                     loading={loadingSemester}
-                    placeholder="Select End Year"
-                    picker="year"
+                    placeholder="Select End At"
+                    picker="month"
                     style={{ width: '100%' }}
                 />
             </Item>

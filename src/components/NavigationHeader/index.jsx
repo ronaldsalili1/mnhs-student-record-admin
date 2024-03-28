@@ -26,8 +26,16 @@ const NavigationHeader = () => {
 
     return (
         <Header
-            style={{ backgroundColor: token.colorWhite }}
             className="nav-header"
+            style={{
+                boxShadow: '0 5px 5px -5px rgba(0, 0, 0, 0.3)',
+                position: 'fixed',
+                top: 0,
+                right: 0,
+                left: 300,
+                height: 64,
+                zIndex: 10,
+            }}
         >
             <Flex
                 justify="space-between"

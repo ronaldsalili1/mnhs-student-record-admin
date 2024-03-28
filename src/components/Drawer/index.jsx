@@ -82,10 +82,11 @@ const Drawer = ({ collapsed, setCollapsed }) => {
             breakpoint="lg"
             width={300}
             style={{
-                position: 'sticky',
+                position: 'fixed',
                 top: 0,
                 left: 0,
                 height: '100vh',
+                boxShadow: '5px 0 5px -5px rgba(0, 0, 0, 0.3)',
             }}
         >
             <Flex

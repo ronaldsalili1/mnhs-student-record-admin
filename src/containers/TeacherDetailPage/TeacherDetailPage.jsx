@@ -47,14 +47,6 @@ const TeacherDetailPage = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [teacher]);
 
-    useEffect(() => {
-        // const student = dataSource.find(data => data._id === studentId);
-        // setTitle(student.name);
-
-        // return () => setTitle(null);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
     if (!teacherId) {
         return <TeacherBasicPage {...teacherProps}/>;
     }

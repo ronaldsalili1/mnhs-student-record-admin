@@ -2,7 +2,6 @@ import { useContext, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { Flex } from 'antd';
-import dayjs from 'dayjs';
 
 import { NavigationContext } from '../../providers/NavigationProvider';
 import SemesterForm from './components/SemesterForm';
@@ -37,9 +36,9 @@ const SemesterDetailPage = () => {
             setTitle('New Semester');
         } else {
             const {
+                term,
                 sy_start_year,
                 sy_end_year,
-                term,
             } = semester || {};
             let semesterNum = '';
 
@@ -53,7 +52,7 @@ const SemesterDetailPage = () => {
                 default:
                     break;
             }
-            setTitle(`S.Y. ${dayjs(sy_start_year).year()} - ${dayjs(sy_end_year).year()} | ${semesterNum} Semester`);
+            setTitle(`S.Y. ${sy_start_year} - ${sy_end_year} | ${semesterNum} Semester`);
         }
 
         return () => {

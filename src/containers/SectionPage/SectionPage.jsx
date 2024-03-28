@@ -19,7 +19,6 @@ const SectionPage = () => {
     const query = getParamsFromUrl();
     const location = useLocation();
     const { loadingSections, loadingTeachers, teachers, sections, total, page, limit, getSections } = useSection();
-    console.log('🚀 ~ teachers:', teachers);
 
     useEffect(() => {
         setTitle('Sections');
