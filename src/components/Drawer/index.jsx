@@ -110,6 +110,7 @@ const Drawer = ({ collapsed, setCollapsed }) => {
                 onClick={({ key }) => {
                     navigate(`/${key}`);
                 }}
+                style={{ paddingBottom: 50 }}
             />
         </Sider>
     );
