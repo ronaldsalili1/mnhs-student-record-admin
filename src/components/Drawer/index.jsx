@@ -87,6 +87,7 @@ const Drawer = ({ collapsed, setCollapsed }) => {
                 left: 0,
                 height: '100vh',
                 boxShadow: '5px 0 5px -5px rgba(0, 0, 0, 0.3)',
+                overflow: 'auto',
             }}
         >
             <Flex
