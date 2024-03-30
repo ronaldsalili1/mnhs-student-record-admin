@@ -54,7 +54,10 @@ const Navigation = ({ breadcrumb=false }) => {
                                 <Outlet/>
                             </Card>
                         </Content>
-                        <Footer style={{ textAlign: 'center', padding: '10px 0px 0px 300px' }}>
+                        <Footer
+                            className="nav-content"
+                            style={{ textAlign: 'center', padding: '10px 0px 0px 300px' }}
+                        >
                             © 2024 Mayorga National High School. All rights reserved.
                         </Footer>
                     </Layout>

@@ -1,52 +1,21 @@
 import { useContext, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { Flex } from 'antd';
 
 import { NavigationContext } from '../../providers/NavigationProvider';
-import StudentForm from './components/StudentForm';
-
-const dataSource = [
-    {
-        key: '621d2a6e9bea8f5e982a129d',
-        _id: '621d2a6e9bea8f5e982a129d',
-        name: 'Cadayong, Mhar Padro',
-        lrn: '6482947',
-        birthdate: 'April 22, 1994',
-        sex: 'Male',
-    },
-    {
-        key: '621d2a6e9bea8f5e982a129e',
-        _id: '621d2a6e9bea8f5e982a129e',
-        name: 'Magayo-ong, Almirah Mae',
-        lrn: '9467947',
-        birthdate: 'June 20, 1998',
-        sex: 'Female',
-    },
-    {
-        key: '621d2a6e9bea8f5e982a129f',
-        _id: '621d2a6e9bea8f5e982a129f',
-        name: 'Pantin, Juden Jay',
-        lrn: '3948592',
-        birthdate: 'September 06, 1995',
-        sex: 'Male',
-    },
-    {
-        key: '621d2a6e9bea8f5e982a12a0',
-        _id: '621d2a6e9bea8f5e982a12a0',
-        name: 'Salili, Ronald Hamot',
-        lrn: '1234567',
-        birthdate: 'January 10, 1999',
-        sex: 'Male',
-    },
-];
+import useStudentDetail from '../../hooks/StudentDetailPage/useStudentDetail';
+import DetailTab from '../../components/DetailTab';
+import StudentBasicPage from './StudentBasicPage/StudentBasicPage';
+import StudentSubjectGradePage from './StudentSubjectGradePage/StudentSubjectGradePage';
 
 const StudentDetailPage = () => {
     const layoutState = useContext(NavigationContext);
     const { setBreadcrumbItems, setTitle } = layoutState;
 
-    const { studentId } = useParams();
+    const { studentId, tab } = useParams();
     const navigate = useNavigate();
+    const studentProps = useStudentDetail(studentId);
+    const { student } = studentProps;
 
     useEffect(() => {
         setBreadcrumbItems([
@@ -59,15 +28,15 @@ const StudentDetailPage = () => {
                 },
             },
             {
-                title: studentId ? 'Details' : 'Create',
+                title: student ? 'Details' : 'Create',
             },
         ]);
 
-        if (!studentId) {
+        if (!student) {
             setTitle('New Student');
         } else {
-            const student = dataSource.find(data => data._id === studentId);
-            setTitle(student.name);
+            const { last_name, first_name, middle_name, suffix } = student || {};
+            setTitle(`${last_name}, ${first_name}${suffix ? ', ' + suffix : '' }${middle_name ? ', ' + middle_name : ''}`);
         }
 
         return () => {
@@ -75,12 +44,29 @@ const StudentDetailPage = () => {
             setBreadcrumbItems([]);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [student]);
+
+    if (!studentId) {
+        return <StudentBasicPage {...studentProps}/>;
+    }
     
     return (
-        <Flex justify="center">
-            <StudentForm/>
-        </Flex>
+        <DetailTab
+            activeKey={tab}
+            items={[
+                {
+                    key: 'information',
+                    label: 'Information',
+                    children: <StudentBasicPage {...studentProps}/>,
+                },
+                {
+                    key: 'subject-grades',
+                    label: 'Subject Grades',
+                    children: <StudentSubjectGradePage />,
+                },
+            ]}
+            onTabClick={value => navigate(`/students/${studentId}/${value}`)}
+        />
     );
 };
 

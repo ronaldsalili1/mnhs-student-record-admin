@@ -98,6 +98,10 @@ const AdministratorForm = (props) => {
                         required: true,
                         message: 'Email is required',
                     },
+                    {
+                        type: 'email',
+                        message: 'Email is not valid',
+                    },
                 ]}
             >
                 <SkeletonInput

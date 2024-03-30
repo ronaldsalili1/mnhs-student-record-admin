@@ -99,7 +99,7 @@ const router = createBrowserRouter(
 
                 {/* Student Pages */}
                 <Route
-                    path="students/:studentId"
+                    path="students/:studentId/:tab"
                     element={<StudentDetailPage/>}
                 />
                 <Route

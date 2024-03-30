@@ -66,4 +66,17 @@ export const filterOption = (input, option) => {
     return lowerCasedLabel.includes(input.toLowerCase());
 };
 
-  
+/**
+ * 
+ * @param {Object} obj 
+ * @returns {Object}
+ */
+export const removeObjNilValues = (obj) => {
+    Object.keys(obj).forEach(key => {
+        if (obj[key] === undefined || obj[key] === null || obj[key] === '') {
+            delete obj[key];
+        }
+    });
+
+    return obj;
+};
