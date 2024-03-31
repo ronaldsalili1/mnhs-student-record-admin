@@ -102,3 +102,23 @@ export const patch = async ({ uri, query, body={}, navigate, location }) => {
         console.error(error);
     }
 };
+
+export const del = async ({ uri, navigate, location }) => {
+    try {
+        const response = await fetch(`${config.api}${uri}`, {
+            ...options,
+            method: 'DELETE',
+        });
+
+        const jsonResponse = await response.json();
+        needLogout({
+            meta: jsonResponse.meta,
+            navigate,
+            location,
+        });
+
+        return jsonResponse;
+    } catch (error) {
+        console.error(error);
+    }
+};

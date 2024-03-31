@@ -7,6 +7,7 @@ import useStudentDetail from '../../hooks/StudentDetailPage/useStudentDetail';
 import DetailTab from '../../components/DetailTab';
 import StudentBasicPage from './StudentBasicPage/StudentBasicPage';
 import StudentSubjectGradePage from './StudentSubjectGradePage/StudentSubjectGradePage';
+import StudentShsEligibilityPage from './StudentShsEligibilityPage/StudentShsEligibilityPage';
 
 const StudentDetailPage = () => {
     const layoutState = useContext(NavigationContext);
@@ -58,6 +59,11 @@ const StudentDetailPage = () => {
                     key: 'information',
                     label: 'Information',
                     children: <StudentBasicPage {...studentProps}/>,
+                },
+                {
+                    key: 'shs-eligibility',
+                    label: 'SHS Eligibility',
+                    children: <StudentShsEligibilityPage />,
                 },
                 {
                     key: 'subject-grades',

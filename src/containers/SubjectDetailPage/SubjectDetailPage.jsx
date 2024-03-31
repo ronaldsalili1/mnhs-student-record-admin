@@ -7,6 +7,7 @@ import useSubjectDetail from '../../hooks/SubjectDetailPage/useSubjectDetail';
 import DetailTab from '../../components/DetailTab';
 import SubjectBasicPage from './SubjectBasicPage/SubjectBasicPage';
 import SubjectTeacherPage from './SubjectTeacherPage/SubjectTeacherPage';
+import SubjectStudentPage from './SubjectStudentPage/SubjectStudentPage';
 
 
 const SubjectDetailPage = () => {
@@ -63,6 +64,11 @@ const SubjectDetailPage = () => {
                     key: 'subject-teachers',
                     label: 'Teachers',
                     children: <SubjectTeacherPage />,
+                },
+                {
+                    key: 'subject-student',
+                    label: 'Students',
+                    children: <SubjectStudentPage />,
                 },
             ]}
             onTabClick={value => navigate(`/subjects/${subjectId}/${value}`)}

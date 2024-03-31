@@ -80,3 +80,16 @@ export const removeObjNilValues = (obj) => {
 
     return obj;
 };
+
+/**
+ * 
+ * @param {any} value 
+ * @returns 
+ */
+export const isNil = (value) => {
+    if (value === null || value === undefined) {
+        return true;
+    }
+
+    return false;
+};

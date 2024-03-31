@@ -24,9 +24,14 @@ const SemesterPage = () => {
         if (semesters.length === 0) {
             return [];
         }
-        const semWithOActive = semesters.filter(semester => semester.status !== 'active');
+
         const activeSemester = semesters.find(semester => semester.status === 'active');
-        
+        if (!activeSemester) {
+            return semesters.map(sem => ({ ...sem, key: sem._id }));
+        }
+
+        const semWithOActive = semesters.filter(semester => semester.status !== 'active');
+    
         return [activeSemester, ...semWithOActive].map(sem => ({ ...sem, key: sem._id }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [semesters]);
