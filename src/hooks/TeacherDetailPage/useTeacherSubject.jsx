@@ -34,7 +34,7 @@ const useTeacherSubjectDetail = () => {
     const getSubjectOptions = async () => {
         setLoadingSubjects(true);
 
-        const response = await get({ uri: '/admin/subjects/all/options', navigate, location });
+        const response = await get({ uri: '/admin/subjects/options/all', navigate, location });
         if (response?.meta?.code !== 200) {
             setMeta(response?.meta);
             setLoadingSubjects(false);

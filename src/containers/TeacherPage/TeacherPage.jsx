@@ -7,7 +7,7 @@ import { NavigationContext } from '../../providers/NavigationProvider';
 import TeacherSearchForm from './components/TeacherSearchForm';
 import options from '../../constants/options';
 import useTeacher from '../../hooks/useTeacher';
-import { getParamsFromUrl, objectToQueryString } from '../../helpers/general';
+import { formatFullName, getParamsFromUrl, objectToQueryString } from '../../helpers/general';
 
 const { Link } = Typography;
 
@@ -30,18 +30,10 @@ const TeacherPage = () => {
 
     const columns = [
         {
-            title: 'Name (Last, First, Suffix, Middle)',
+            title: 'Name (Last, First, Middle, Suffix )',
             dataIndex: 'name',
             key: 'name',
-            render: (_, record) => {
-                const {
-                    last_name,
-                    first_name,
-                    suffix,
-                    middle_name,
-                } = record;
-                return `${last_name}, ${first_name}${suffix ? ', ' + suffix : '' }${middle_name ? ', ' + middle_name : ''}`;
-            },
+            render: (_, record) => formatFullName(record),
         },
         {
             title: 'Email',

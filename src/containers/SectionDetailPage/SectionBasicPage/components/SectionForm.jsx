@@ -1,9 +1,8 @@
 import { Row, Form, Button, Flex, Typography } from 'antd';
 
-import options from '../../../constants/options';
-import SkeletonSelect from '../../../components/CustomUI/SkeletonSelect';
-import SkeletonInput from '../../../components/CustomUI/SkeletonInput';
-import { filterOption } from '../../../helpers/general';
+import options from '../../../../constants/options';
+import SkeletonSelect from '../../../../components/CustomUI/SkeletonSelect';
+import SkeletonInput from '../../../../components/CustomUI/SkeletonInput';
 import { useEffect, useRef } from 'react';
 
 const { Item } = Form;
@@ -11,7 +10,7 @@ const { Text } = Typography;
 
 const SubjectForm = (props) => {
     const formRef = useRef(null);
-    const { loadingSection, loadingTeachers, loadingSubmit, section, teachers, createOrUpdateSection } = props;
+    const { loadingSection, loadingSubmit, section, createOrUpdateSection } = props;
 
     useEffect(() => {
         formRef.current?.setFieldsValue(section);
@@ -63,30 +62,6 @@ const SubjectForm = (props) => {
                 <SkeletonInput
                     loading={loadingSection}
                     placeholder="Enter Name"
-                />
-            </Item>
-            <Item
-                name="teacher_id"
-                label="Adviser:"
-                rules={[
-                    {
-                        required: true,
-                        message: 'Adviser is required',
-                    },
-                ]}
-            >
-                <SkeletonSelect
-                    loading={loadingSection || loadingTeachers}
-                    placeholder="Select Adviser"
-                    showSearch
-                    filterOption={filterOption}
-                    options={teachers.map(teacher => {
-                        const { _id, last_name, first_name, suffix, middle_name } = teacher || {};
-                        return ({
-                            label: `${last_name}, ${first_name}${suffix ? ', ' + suffix : '' }${middle_name ? ', ' + middle_name : ''}`,
-                            value: _id,
-                        });
-                    })}
                 />
             </Item>
             <Item>

@@ -9,8 +9,6 @@ const useSectionDetail = (sectionId) => {
     const [loadingSection, setLoadingSection] = useState(false);
     const [loadingSubmit, setLoadingSubmit] = useState(false);
     const [section, setSection] = useState(null);
-    const [teachers, setTeachers] = useState([]);
-    const [loadingTeachers, setLoadingTeachers] = useState(false);
 
     const layoutState = useContext(NavigationContext);
     const { notificationApi } = layoutState;
@@ -20,20 +18,6 @@ const useSectionDetail = (sectionId) => {
 
     const resetMeta = () => {
         setMeta(null);
-    };
-
-    const getTeacherOptions = async () => {
-        setLoadingTeachers(true);
-
-        const response = await get({ uri: '/admin/teachers/all/options', navigate, location });
-        if (response?.meta?.code !== 200) {
-            setMeta(response?.meta);
-            setLoadingTeachers(false);
-            return;
-        }
-
-        setTeachers(response?.data?.teachers);
-        setLoadingTeachers(false);
     };
 
     const getSectionById = async () => {
@@ -92,12 +76,10 @@ const useSectionDetail = (sectionId) => {
     };
 
     useEffect(() => {
-        getTeacherOptions();
         sectionId && getSectionById();
 
         return () => {
             setSection(null);
-            setTeachers([]);
             setMeta(null);
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -124,8 +106,6 @@ const useSectionDetail = (sectionId) => {
         loadingSection,
         loadingSubmit,
         section,
-        loadingTeachers,
-        teachers,
     };
 };
 

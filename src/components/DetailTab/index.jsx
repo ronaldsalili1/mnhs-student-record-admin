@@ -21,6 +21,7 @@ const DetailTab = ({ items, activeKey, onTabClick }) => {
             type="card"
             items={styledItems}
             onTabClick={onTabClick}
+            destroyInactiveTabPane={true}
             style={{ width: '100%' }}
         />
     );

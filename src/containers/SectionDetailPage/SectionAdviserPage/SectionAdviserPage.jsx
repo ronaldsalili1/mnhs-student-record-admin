@@ -1,35 +1,38 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Table, Typography, Button, Flex, Grid } from 'antd';
+import { Table, Typography, Button, Flex, Grid, Badge } from 'antd';
 import { PlusSquareFilled } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 
-import SubjectTeacherModal from './components/SubjectTeacherModal';
-import useSubjectTeacher from '../../../hooks/SubjectDetailPage/useSubjectTeacher';
 import { formatFullName, getParamsFromUrl, objectToQueryString } from '../../../helpers/general';
+import SectionAdviserModal from './components/SectionAdviserModal';
+import useSectionAdviser from '../../../hooks/SectionDetailPage/useSectionAdviser';
+
+dayjs.extend(isSameOrAfter);
 
 const { Link } = Typography;
 
-const SubjectTeacherPage = () => {
+const SectionAdviserPage = () => {
     const [modal, setModal] = useState(false);
 
     const navigate = useNavigate();
     const location = useLocation();
     const query = getParamsFromUrl();
     const { xs } = Grid.useBreakpoint();
-    const subjectTeacherProps = useSubjectTeacher();
+    const sectionAdviserProps = useSectionAdviser();
     const {
-        loadingSubjectTeachers,
-        subjectTeacher,
-        subjectTeachers,
         meta,
-        getSubjectTeacherById,
-        setSubjectTeacher,
+        setSectionAdviser,
+        getSectionAdvisers,
+        getSectionAdviserById,
+        loadingSectionAdvisers,
+        sectionAdvisers,
+        sectionAdviser,
+        total,
         page,
         limit,
-        total,
-        getSubjectTeachers,
-    } = subjectTeacherProps;
+    } = sectionAdviserProps;
 
     useEffect(() => {
         if (meta?.code === 200) {
@@ -57,6 +60,25 @@ const SubjectTeacherPage = () => {
             render: data => data ? dayjs(data).format('YYYY-MM-DD') : '-',
         },
         {
+            title: 'Status',
+            dataIndex: 'status',
+            key: 'status',
+            render: (_, record) => {
+                const { status } = record || {};
+
+                if (status !== 'active') {
+                    return 'Inactive';
+                }
+
+                return (
+                    <Badge
+                        status="success"
+                        text="Active"
+                    />
+                );
+            },
+        },
+        {
             title: 'Action',
             dataIndex: 'action',
             key: 'action',
@@ -64,7 +86,7 @@ const SubjectTeacherPage = () => {
                 return (
                     <Link
                         onClick={() => {
-                            getSubjectTeacherById(record._id);
+                            getSectionAdviserById(record._id);
                             setModal(true);
                         }}
                     >
@@ -74,6 +96,28 @@ const SubjectTeacherPage = () => {
             },
         },
     ];
+
+    const dataSource = useMemo(() => {
+        let finalData = [];
+
+        const activeAdvisers = sectionAdvisers
+            .filter(adviser => {
+                const { start_at, end_at } = adviser || {};
+                const now = dayjs();
+            
+                return now.isSameOrAfter(dayjs(start_at)) && (!end_at || now.isBefore(dayjs(end_at)));
+            })
+            .map(activeAdviser => ({ ...activeAdviser, status: 'active' }));
+        
+        if (activeAdvisers.length > 0) {
+            const inactiveAdvisers = sectionAdvisers.filter(adviser => !activeAdvisers.map(activeAdviser => activeAdviser._id).includes(adviser._id));
+            finalData = [...activeAdvisers, ...inactiveAdvisers];
+        } else {
+            finalData = sectionAdvisers;
+        }
+
+        return finalData.map(data => ({ ...data, key: data._id }));
+    }, [sectionAdvisers]);
 
     return (
         <Flex
@@ -92,20 +136,20 @@ const SubjectTeacherPage = () => {
                     style={{ ...(xs && { width: '100%' }) }}
                     onClick={() => setModal(true)}
                 >
-                    Add Teacher
+                    Add Adviser
                 </Button>
             </Flex>
             <Table
-                loading={loadingSubjectTeachers}
+                loading={loadingSectionAdvisers}
                 scroll={ { x: true } }
-                dataSource={subjectTeachers.map(subjectTeacher => ({ ...subjectTeacher, key: subjectTeacher._id }))}
+                dataSource={dataSource}
                 columns={columns}
                 pagination={{
                     current: page,
                     showSizeChanger: true,
                     onChange: (current, pageSize) => {
                         const queryObj = { ...query, page: current, limit: pageSize };
-                        getSubjectTeachers(queryObj);
+                        getSectionAdvisers(queryObj);
                         const queryString = objectToQueryString(queryObj);
                         navigate(`${location.pathname}${queryString}`);
                     },
@@ -114,19 +158,19 @@ const SubjectTeacherPage = () => {
                     pageSize: limit,
                 }}
             />
-            <SubjectTeacherModal
-                title={subjectTeacher ? subjectTeacher?.subject?.name : 'Add Subject'}
+            <SectionAdviserModal
+                title={sectionAdviser ? formatFullName(sectionAdviser?.teacher) : 'Add Adviser'}
                 destroyOnClose={true}
                 width={450}
                 open={modal}
                 onCancel={() => {
                     setModal(false);
-                    setSubjectTeacher(null);
+                    setSectionAdviser(null);
                 }}
-                subjectTeacherProps={subjectTeacherProps}
+                sectionAdviserProps={sectionAdviserProps}
             />
         </Flex>
     );
 };
 
-export default SubjectTeacherPage;
+export default SectionAdviserPage;

@@ -93,3 +93,16 @@ export const isNil = (value) => {
 
     return false;
 };
+
+/**
+ * 
+ * @param {Object} params 
+ * @param {string} params.first_name
+ * @param {string} params.last_name
+ * @param {string} [params.middle_name]
+ * @param {string} [params.suffix]
+ * @returns {string}
+ */
+export const formatFullName = ({ first_name, last_name, middle_name, suffix }) => {
+    return `${last_name}, ${first_name} ${middle_name || ''} ${suffix || ''}`;
+};

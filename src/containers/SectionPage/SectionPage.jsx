@@ -18,7 +18,7 @@ const SectionPage = () => {
     const { xs } = Grid.useBreakpoint();
     const query = getParamsFromUrl();
     const location = useLocation();
-    const { loadingSections, loadingTeachers, teachers, sections, total, page, limit, getSections } = useSection();
+    const { loadingSections, loadingTeachers, sections, total, page, limit, getSections } = useSection();
 
     useEffect(() => {
         setTitle('Sections');
@@ -39,22 +39,13 @@ const SectionPage = () => {
             key: 'grade_level',
         },
         {
-            title: 'Adviser',
-            dataIndex: 'adviser',
-            key: 'adviser',
-            render: (_, record) => {
-                const { last_name, first_name, suffix, middle_name } = record?.teacher || {};
-                return `${last_name}, ${first_name}${suffix ? ', ' + suffix : '' }${middle_name ? ', ' + middle_name : ''}`;
-            },
-        },
-        {
             title: 'Action',
             dataIndex: 'action',
             key: 'action',
             render: (_, record) => {
                 return (
                     <Link
-                        onClick={() => navigate(`/sections/${record._id}`)}
+                        onClick={() => navigate(`/sections/${record._id}/information`)}
                     >
 						Edit
                     </Link>   
@@ -72,7 +63,6 @@ const SectionPage = () => {
                 style={{ margin: '10px 0px' }}
             >
                 <SectionSearchForm
-                    teachers={teachers}
                     loadingTeachers={loadingTeachers}
                     getSections={getSections}
                 />

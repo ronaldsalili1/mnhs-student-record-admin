@@ -6,26 +6,26 @@ import { get, post, patch } from '../../helpers/request';
 import { NavigationContext } from '../../providers/NavigationProvider';
 import { getParamsFromUrl } from '../../helpers/general';
 
-const useSubjectTeacher = () => {
+const useSectionAdviser = () => {
     const [meta, setMeta] = useState(null);
+    const [loadingSectionAdvisers, setLoadingSectionAdvisers] = useState(false);
+    const [loadingSectionAdviser, setLoadingSectionAdviser] = useState(false);
     const [loadingTeachers, setLoadingTeachers] = useState(false);
-    const [loadingSubjectTeacher, setLoadingSubjectTeacher] = useState(false);
     const [loadingSubmit, setLoadingSubmit] = useState(false);
-    const [loadingSubjectTeachers, setLoadingSubjectTeachers] = useState(false);
-    const [subjectTeacher, setSubjectTeacher] = useState(null);
-    const [subjectTeachers, setSubjectTeachers] = useState([]);
+    const [sectionAdviser, setSectionAdviser] = useState(null);
     const [teachers, setTeachers] = useState([]);
+    const [sectionAdvisers, setSectionAdvisers] = useState([]);
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(10);
 
     const layoutState = useContext(NavigationContext);
     const { notificationApi } = layoutState;
+    const { sectionId } = useParams();
 
     const query = getParamsFromUrl();
     const navigate = useNavigate();
     const location = useLocation();
-    const { subjectId } = useParams();
 
     const resetMeta = () => {
         setMeta(null);
@@ -45,66 +45,59 @@ const useSubjectTeacher = () => {
         setLoadingTeachers(false);
     };
 
-    const getSubjectTeachers = async (query) => {
-        setLoadingSubjectTeachers(true);
+    const getSectionAdvisers = async (query) => {
+        setLoadingSectionAdvisers(true);
 
-        const newQuery = query
-            ? {
-                ...query, 
-                subject_id: subjectId,
-                sort_by: 'teacher',
-            }
-            : { subject_id: subjectId, sort_by: 'teacher' };
-        const response = await get({ uri: '/admin/subject-teachers', query: newQuery, navigate, location });
+        const response = await get({ uri: '/admin/section-advisers', query, navigate, location });
         if (response?.meta?.code !== 200) {
             setMeta(response?.meta);
-            setLoadingSubjectTeachers(false);
+            setLoadingSectionAdvisers(false);
             return;
         }
 
         setTotal(response?.data?.total);
         setPage(response?.data?.page);
         setLimit(response?.data?.limit);
-        setSubjectTeachers(response?.data?.subject_teachers);
-        setLoadingSubjectTeachers(false);
+        setSectionAdvisers(response?.data?.section_advisers);
+        setLoadingSectionAdvisers(false);
     };
 
-    const getSubjectTeacherById = async (subjectTeacherId) => {
-        setLoadingSubjectTeacher(true);
+    const getSectionAdviserById = async (sectionAdviserId) => {
+        setLoadingSectionAdviser(true);
 
-        const response = await get({ uri: `/admin/subject-teachers/${subjectTeacherId}`, navigate, location });
+        const response = await get({ uri: `/admin/section-advisers/${sectionAdviserId}`, navigate, location });
         if (response?.meta?.code !== 200) {
             setMeta(response?.meta);
-            setLoadingSubjectTeacher(false);
+            setLoadingSectionAdviser(false);
             return;
         }
 
-        setSubjectTeacher(response?.data?.subject_teacher);
-        setLoadingSubjectTeacher(false);
+        setSectionAdviser(response?.data?.section_adviser);
+        setLoadingSectionAdviser(false);
     };
 
-    const createOrUpdateSubjectTeacher = async ({ fields }) => {
+    const createOrUpdateSectionAdviser = async ({ sectionAdviserId, fields }) => {
         setLoadingSubmit(true);
 
         const body = {
-            subject_teacher: {
+            section_adviser: {
                 ...fields,
-                subject_id: subjectId,
-                current_timestamp: dayjs().toISOString(),
+                section_id: sectionId,
+                current_timestamp: dayjs().toString(),
             },
         };
 
         let response;
-        if (subjectTeacher) {
+        if (sectionAdviserId) {
             response = await patch({
-                uri: `/admin/subject-teachers/${subjectTeacher._id}`,
+                uri: `/admin/section-advisers/${sectionAdviserId}`,
                 body,
                 navigate,
                 location,
             });
         } else {
             response = await post({
-                uri: '/admin/subject-teachers',
+                uri: '/admin/section-advisers',
                 body,
                 navigate,
                 location,
@@ -122,11 +115,12 @@ const useSubjectTeacher = () => {
     };
 
     useEffect(() => {
-        getSubjectTeachers(query);
         getTeacherOptions();
+        getSectionAdvisers(query);
 
         return () => {
-            setSubjectTeacher(null);
+            setSectionAdviser(null);
+            setTeachers([]);
             setMeta(null);
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -141,10 +135,11 @@ const useSubjectTeacher = () => {
             });
 
             if (meta.code === 200) {
-                getSubjectTeachers();
-                setSubjectTeacher(null);
+                getSectionAdvisers();
+                setSectionAdviser(null);
             }
         }
+        
 
         return () => resetMeta();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -153,22 +148,21 @@ const useSubjectTeacher = () => {
     return {
         meta,
         resetMeta,
-        setSubjectTeacher,
-        getTeacherOptions,
-        getSubjectTeachers,
-        getSubjectTeacherById,
-        createOrUpdateSubjectTeacher,
+        setSectionAdviser,
+        getSectionAdvisers,
+        getSectionAdviserById,
+        createOrUpdateSectionAdviser,
+        loadingSectionAdviser,
         loadingSubmit,
+        loadingSectionAdvisers,
         loadingTeachers,
-        loadingSubjectTeacher,
-        loadingSubjectTeachers,
+        sectionAdvisers,
+        sectionAdviser,
         teachers,
-        subjectTeacher,
-        subjectTeachers,
         total,
         page,
         limit,
     };
 };
 
-export default useSubjectTeacher;
+export default useSectionAdviser;

@@ -6,7 +6,7 @@ import { PlusSquareFilled, ExclamationCircleFilled } from '@ant-design/icons';
 import useSubjectStudent from '../../../hooks/SubjectDetailPage/useSubjectStudent';
 import SubjectStudentModal from './components/SubjectStudentModal';
 import SubjectStudentSearchForm from './components/SubjectStudentSearchForm';
-import { getParamsFromUrl, objectToQueryString } from '../../../helpers/general';
+import { formatFullName, getParamsFromUrl, objectToQueryString } from '../../../helpers/general';
 
 const { Link } = Typography;
 const { confirm } = Modal;
@@ -56,13 +56,10 @@ const SubjectStudentPage = () => {
 
     const columns = [
         {
-            title: 'Student',
-            dataIndex: 'student',
-            key: 'student',
-            render: (_, record) => {
-                const { last_name, first_name, suffix, middle_name } = record?.student || {};
-                return `${last_name}, ${first_name}${suffix ? ', ' + suffix : '' }${middle_name ? ', ' + middle_name : ''}`;
-            },
+            title: 'Name (Last, First, Middle, Suffix)',
+            dataIndex: 'name',
+            key: 'name',
+            render: (_, record) => formatFullName(record?.student),
         },
         {
             title: 'Action',

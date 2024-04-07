@@ -1,18 +1,19 @@
 import { useContext, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { Flex } from 'antd';
 
 import { NavigationContext } from '../../providers/NavigationProvider';
-import SectionForm from './components/SectionForm';
 import useSectionDetail from '../../hooks/SectionDetailPage/useSectionDetail';
-
+import DetailTab from '../../components/DetailTab';
+import SectionBasicPage from './SectionBasicPage/SectionBasicPage';
+import SectionAdviserPage from './SectionAdviserPage/SectionAdviserPage';
+import SectionStudentPage from './SectionStudentPage/SectionStudentPage';
 
 const SectionDetailPage = () => {
     const layoutState = useContext(NavigationContext);
     const { setBreadcrumbItems, setTitle } = layoutState;
 
-    const { sectionId } = useParams();
+    const { sectionId, tab } = useParams();
     const navigate = useNavigate();
 
     const sectionDetailProps = useSectionDetail(sectionId);
@@ -46,10 +47,32 @@ const SectionDetailPage = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [section]);
 
+    if (!sectionId) {
+        return <SectionBasicPage {...sectionDetailProps}/>;
+    }
+
     return (
-        <Flex justify="center">
-            <SectionForm {...sectionDetailProps}/>
-        </Flex>
+        <DetailTab
+            activeKey={tab}
+            items={[
+                {
+                    key: 'information',
+                    label: 'Information',
+                    children: <SectionBasicPage {...sectionDetailProps}/>,
+                },
+                {
+                    key: 'section-advisers',
+                    label: 'Advisers',
+                    children: <SectionAdviserPage />,
+                },
+                {
+                    key: 'section-students',
+                    label: 'Students',
+                    children: <SectionStudentPage />,
+                },
+            ]}
+            onTabClick={value => navigate(`/sections/${sectionId}/${value}`)}
+        />
     );
 };
 

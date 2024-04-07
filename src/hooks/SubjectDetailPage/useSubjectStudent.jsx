@@ -35,7 +35,7 @@ const useSubjectStudent = () => {
     const getSemesterOptions = async () => {
         setLoadingSemesters(true);
 
-        const response = await get({ uri: '/admin/semesters/all/options', navigate, location });
+        const response = await get({ uri: '/admin/semesters/options/all', navigate, location });
         if (response?.meta?.code !== 200) {
             setMeta(response?.meta);
             setLoadingSemesters(false);
@@ -49,7 +49,7 @@ const useSubjectStudent = () => {
     const getStudentOptions = async () => {
         setLoadingStudents(true);
 
-        const response = await get({ uri: '/admin/students/all/options', navigate, location });
+        const response = await get({ uri: '/admin/students/options/all', navigate, location });
         if (response?.meta?.code !== 200) {
             setMeta(response?.meta);
             setLoadingStudents(false);
@@ -135,17 +135,17 @@ const useSubjectStudent = () => {
     };
 
     const deleteSubjectStudentById = async (subjectStudentId) => {
-        setLoadingSubjectStudent(true);
+        // setLoadingSubjectStudent(true);
 
         const response = await del({ uri: `/admin/subject-students/${subjectStudentId}`, navigate, location });
         if (response?.meta?.code !== 200) {
             setMeta(response?.meta);
-            setLoadingSubjectStudent(false);
+            // setLoadingSubjectStudent(false);
             return;
         }
 
         setMeta(response.meta);
-        setLoadingSubjectStudent(false);
+        // setLoadingSubjectStudent(false);
     };
 
     useEffect(() => {

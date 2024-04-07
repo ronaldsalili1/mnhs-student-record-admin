@@ -42,7 +42,7 @@ const useSection = () => {
     const getTeacherOptions = async () => {
         setLoadingTeachers(true);
 
-        const response = await get({ uri: '/admin/teachers/all/options', navigate, location });
+        const response = await get({ uri: '/admin/teachers/options/all', navigate, location });
         if (response?.meta?.code !== 200) {
             setMeta(response?.meta);
             setLoadingTeachers(false);

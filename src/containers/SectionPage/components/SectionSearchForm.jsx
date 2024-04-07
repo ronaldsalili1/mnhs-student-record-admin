@@ -3,8 +3,7 @@ import { Form, Input, Button, Select, Grid } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
 import options from '../../../constants/options';
-import { filterOption, getParamsFromUrl, objectToQueryString } from '../../../helpers/general';
-import SkeletonSelect from '../../../components/CustomUI/SkeletonSelect';
+import { getParamsFromUrl, objectToQueryString } from '../../../helpers/general';
 
 const { Item } = Form;
 
@@ -12,7 +11,7 @@ const commonItemStyle = {
     margin: 0,
 };
 
-const SectionSearchForm = ({ teachers, loadingTeachers, getSections }) => {
+const SectionSearchForm = ({ getSections }) => {
     const { xs } = Grid.useBreakpoint();
     const query = getParamsFromUrl();
     const navigate = useNavigate();
@@ -23,12 +22,11 @@ const SectionSearchForm = ({ teachers, loadingTeachers, getSections }) => {
         <Form
             initialValues={query}
             onFinish={values => {
-                const { grade_level, teacher_id, keyword } = values;
+                const { grade_level, keyword } = values;
                 const queryObj = {
                     ...(page && { page }),
                     ...(limit && { limit }),
                     ...(grade_level && { grade_level }),
-                    ...(teacher_id && { teacher_id }),
                     ...(keyword && { keyword }),
                 };
                 getSections(queryObj);
@@ -53,29 +51,6 @@ const SectionSearchForm = ({ teachers, loadingTeachers, getSections }) => {
                     options={options.gradeLevel}
                     style={{ width: 170, ...(xs && { width: '100%' }) }}
                     allowClear
-                />
-            </Item>
-            <Item
-                name="teacher_id"
-                style={{
-                    ...commonItemStyle,
-                    ...(xs && { width: '100%' }),
-                }}
-            >
-                <SkeletonSelect
-                    loading={loadingTeachers}
-                    placeholder="Search by Adviser"
-                    style={{ width: 200, ...(xs && { width: '100%' }) }}
-                    allowClear
-                    showSearch
-                    filterOption={filterOption}
-                    options={teachers.map(teacher => {
-                        const { _id, last_name, first_name, suffix, middle_name } = teacher || {};
-                        return ({
-                            label: `${last_name}, ${first_name}${suffix ? ', ' + suffix : '' }${middle_name ? ', ' + middle_name : ''}`,
-                            value: _id,
-                        });
-                    })}
                 />
             </Item>
             <Item

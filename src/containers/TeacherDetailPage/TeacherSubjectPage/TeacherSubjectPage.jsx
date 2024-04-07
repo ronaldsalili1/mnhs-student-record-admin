@@ -31,7 +31,6 @@ const TeacherSubjectPage = () => {
         total,
         getSubjectTeachers,
     } = teacherSubjectProps;
-    console.log('🚀 ~ limit:', limit);
 
     useEffect(() => {
         if (meta?.code === 200) {

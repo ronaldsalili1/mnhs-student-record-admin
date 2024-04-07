@@ -140,7 +140,7 @@ const router = createBrowserRouter(
 
                 {/* Section Pages */}
                 <Route
-                    path="sections/:sectionId"
+                    path="sections/:sectionId/:tab"
                     element={<SectionDetailPage/>}
                 />
                 <Route
