@@ -136,7 +136,7 @@ const useSectionStudent = () => {
         getSectionStudents(query);
 
         return () => {
-            setSectionStudents(null);
+            setSectionStudents([]);
             setStudents([]);
             setMeta(null);
         };
