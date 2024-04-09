@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Table, Typography, Button, Flex, Grid, Divider, Modal } from 'antd';
+import { Table, Typography, Button, Flex, Grid, Modal } from 'antd';
 import { PlusSquareFilled, ExclamationCircleFilled } from '@ant-design/icons';
-import dayjs from 'dayjs';
 
 import { formatFullName, getParamsFromUrl, objectToQueryString } from '../../../helpers/general';
 import SectionStudentModal from './components/SectionStudentModal';
@@ -25,17 +24,20 @@ const SectionStudentPage = () => {
     const {
         meta,
         getStudentOptions,
+        getSectionStudents,
         deleteSectionStudentById,
-        // setSectionAdviser,
         sectionStudents,
-        // getSectionAdviserById,
         loadingSectionStudents,
-        // sectionAdvisers,
-        // sectionAdviser,
-        // total,
-        // page,
-        // limit,
+        semesters,
+        total,
+        page,
+        limit,
     } = sectionStudentProps;
+
+    const activeSemester = useMemo(() => {
+        return semesters.find(semester => semester.status === 'active') ;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [semesters]);
 
     useEffect(() => {
         if (meta?.code === 200) {
@@ -46,12 +48,19 @@ const SectionStudentPage = () => {
     }, [meta]);
 
     useEffect(() => {
-        if (selectedSemester) {
-            setDisabledStudents(false);
-            getStudentOptions(selectedSemester);
+        if (modal) {
+            if (activeSemester) {
+                setDisabledStudents(false);
+                getStudentOptions(activeSemester._id);
+            }
+    
+            if (selectedSemester) {
+                setDisabledStudents(false);
+                getStudentOptions(selectedSemester);
+            }
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedSemester]);
+    }, [selectedSemester, semesters, modal]);
 
     const confirmDelete = (id) => {
         confirm({
@@ -102,30 +111,6 @@ const SectionStudentPage = () => {
         },
     ];
 
-    // const dataSource = useMemo(() => {
-    //     let finalData = [];
-
-    //     const activeAdvisers = sectionAdvisers
-    //         .filter(adviser => {
-    //             const { start_at, end_at } = adviser || {};
-    //             const now = dayjs();
-            
-    //             return now.isSameOrAfter(dayjs(start_at)) && (!end_at || now.isBefore(dayjs(end_at)));
-    //         })
-    //         .map(activeAdviser => ({ ...activeAdviser, status: 'active' }));
-        
-    //     if (activeAdvisers.length > 0) {
-    //         const inactiveAdvisers = sectionAdvisers.filter(adviser => !activeAdvisers.map(activeAdviser => activeAdviser._id).includes(adviser._id));
-    //         finalData = [...activeAdvisers, ...inactiveAdvisers];
-    //     } else {
-    //         finalData = sectionAdvisers;
-    //     }
-
-    //     return finalData.map(data => ({ ...data, key: data._id }));
-    // }, [sectionAdvisers]);
-
-    
-
     return (
         <Flex
             vertical
@@ -152,22 +137,22 @@ const SectionStudentPage = () => {
                 scroll={ { x: true } }
                 dataSource={sectionStudents.map(sectionStudent => ({ ...sectionStudent, key: sectionStudent._id }))}
                 columns={columns}
-                // pagination={{
-                //     current: page,
-                //     showSizeChanger: true,
-                //     onChange: (current, pageSize) => {
-                //         const queryObj = { ...query, page: current, limit: pageSize };
-                //         getSectionAdvisers(queryObj);
-                //         const queryString = objectToQueryString(queryObj);
-                //         navigate(`${location.pathname}${queryString}`);
-                //     },
-                //     position: ['bottomRight'],
-                //     total,
-                //     pageSize: limit,
-                // }}
+                pagination={{
+                    current: page,
+                    showSizeChanger: true,
+                    onChange: (current, pageSize) => {
+                        const queryObj = { ...query, page: current, limit: pageSize };
+                        getSectionStudents(queryObj);
+                        const queryString = objectToQueryString(queryObj);
+                        navigate(`${location.pathname}${queryString}`);
+                    },
+                    position: ['bottomRight'],
+                    total,
+                    pageSize: limit,
+                }}
             />
             <SectionStudentModal
-                // title={sectionAdviser ? formatFullName(sectionAdviser?.teacher) : 'Add Adviser'}
+                title="Add Students"
                 destroyOnClose={true}
                 width={450}
                 open={modal}
@@ -181,6 +166,7 @@ const SectionStudentPage = () => {
                 setDisabledStudents={setDisabledStudents}
                 selectedSemester={selectedSemester}
                 setSelectedSemester={setSelectedSemester}
+                activeSemester={activeSemester}
             />
         </Flex>
     );

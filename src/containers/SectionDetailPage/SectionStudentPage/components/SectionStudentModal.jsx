@@ -1,15 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useRef } from 'react';
 import { Modal, Form, Button, Flex } from 'antd';
-import dayjs from 'dayjs';
 
 import { filterOption, formatFullName } from '../../../../helpers/general';
 import SkeletonSelect from '../../../../components/CustomUI/SkeletonSelect';
-import SkeletonDatePicker from '../../../../components/CustomUI/SkeletonDatePicker';
-
 
 const { Item } = Form;
 
-const SectionStudentModal = ({ sectionStudentProps, setSelectedSemester, disabledStudents, ...rest }) => {
+const SectionStudentModal = ({ sectionStudentProps, setSelectedSemester, disabledStudents, activeSemester, ...rest }) => {
     const formRef = useRef(null);
 
     const {
@@ -20,22 +17,6 @@ const SectionStudentModal = ({ sectionStudentProps, setSelectedSemester, disable
         semesters,
         createSectionStudents,
     } = sectionStudentProps;
-
-
-    const activeSemester = useMemo(() => {
-        return semesters.find(semester => semester.status === 'active') ;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [semesters]);
-    // useEffect(() => {
-    //     const { start_at, end_at, teacher } = sectionAdviser || {};
-    //     formRef.current?.setFieldsValue({
-    //         teacher_id: teacher?._id,
-    //         start_at: start_at ? dayjs(start_at) : null,
-    //         end_at: end_at ? dayjs(end_at) : null,
-    //     });
-
-    //     start_at && setStartAt(dayjs(start_at));
-    // }, [sectionAdviser]);
 
     return (
         <Modal

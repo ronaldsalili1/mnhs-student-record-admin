@@ -1,22 +1,19 @@
 import { useEffect, useState, useContext } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
-import dayjs from 'dayjs';
 
-import { get, post, patch, del } from '../../helpers/request';
+import { get, post, del } from '../../helpers/request';
 import { NavigationContext } from '../../providers/NavigationProvider';
 import { getParamsFromUrl } from '../../helpers/general';
 
 const useSectionStudent = () => {
     const [meta, setMeta] = useState(null);
     const [loadingSectionStudents, setLoadingSectionStudents] = useState(false);
-    // const [loadingSectionAdviser, setLoadingSectionAdviser] = useState(false);
     const [loadingStudents, setLoadingStudents] = useState(false);
     const [loadingSemesters, setLoadingSemesters] = useState(false);
     const [loadingSubmit, setLoadingSubmit] = useState(false);
     const [sectionStudents, setSectionStudents] = useState([]);
     const [students, setStudents] = useState([]);
     const [semesters, setSemesters] = useState([]);
-    // const [sectionAdvisers, setSectionAdvisers] = useState([]);
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(10);
@@ -139,7 +136,7 @@ const useSectionStudent = () => {
         getSectionStudents(query);
 
         return () => {
-            // setSectionStudents(null);
+            setSectionStudents(null);
             setStudents([]);
             setMeta(null);
         };
@@ -167,19 +164,14 @@ const useSectionStudent = () => {
     return {
         meta,
         resetMeta,
-        // setSectionStudents,
-        // getSectionStudents,
-        // deleteSectionStudentById,
         getStudentOptions,
         getSectionStudents,
         createSectionStudents,
         deleteSectionStudentById,
-        // loadingSectionAdviser,
         loadingSubmit,
         loadingSectionStudents,
         loadingStudents,
         loadingSemesters,
-        // sectionAdvisers,
         sectionStudents,
         students,
         semesters,
