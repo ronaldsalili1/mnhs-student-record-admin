@@ -55,8 +55,8 @@ const TeacherSubjectModal = ({ teacherSubjectProps, ...rest }) => {
                     const { subject_id, start_at, end_at } = values || {};
                     const fields = {
                         subject_id,
-                        start_at: start_at.toISOString(),
-                        ...(end_at && { end_at: end_at.toISOString() }),
+                        start_at: start_at.startOf('day').toISOString(),
+                        ...(end_at && { end_at: end_at.endOf('day').toISOString() }),
                     };
                     
                     createOrUpdateSubjectTeacher({ fields });

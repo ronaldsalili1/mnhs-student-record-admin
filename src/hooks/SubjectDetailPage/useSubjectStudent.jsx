@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 
-import { get, post, patch, del } from '../../helpers/request';
+import { get, post, del } from '../../helpers/request';
 import { NavigationContext } from '../../providers/NavigationProvider';
 import { getParamsFromUrl } from '../../helpers/general';
 
@@ -9,10 +9,8 @@ const useSubjectStudent = () => {
     const [meta, setMeta] = useState(null);
     const [loadingSemesters, setLoadingSemesters] = useState(false);
     const [loadingStudents, setLoadingStudents] = useState(false);
-    const [loadingSubjectStudent, setLoadingSubjectStudent] = useState(false);
     const [loadingSubjectStudents, setLoadingSubjectStudents] = useState(false);
     const [loadingSubmit, setLoadingSubmit] = useState(false);
-    const [subjectStudent, setSubjectStudent] = useState(null);
     const [subjectStudents, setSubjectStudents] = useState([]);
     const [students, setStudents] = useState([]);
     const [semesters, setSemesters] = useState([]);
@@ -46,10 +44,17 @@ const useSubjectStudent = () => {
         setLoadingSemesters(false);
     };
 
-    const getStudentOptions = async () => {
+    const getStudentOptions = async (semesterId) => {
         setLoadingStudents(true);
 
-        const response = await get({ uri: '/admin/students/options/all', navigate, location });
+        const response = await get({
+            uri: '/admin/subject-students/options/students',
+            navigate,
+            location,
+            query: {
+                subject_id: subjectId,
+                semester_id: semesterId,
+            } });
         if (response?.meta?.code !== 200) {
             setMeta(response?.meta);
             setLoadingStudents(false);
@@ -83,20 +88,6 @@ const useSubjectStudent = () => {
         setLoadingSubjectStudents(false);
     };
 
-    const getSubjectStudentById = async (subjectStudentId) => {
-        setLoadingSubjectStudent(true);
-
-        const response = await get({ uri: `/admin/subject-students/${subjectStudentId}`, navigate, location });
-        if (response?.meta?.code !== 200) {
-            setMeta(response?.meta);
-            setLoadingSubjectStudent(false);
-            return;
-        }
-
-        setSubjectStudent(response?.data?.subject_student);
-        setLoadingSubjectStudent(false);
-    };
-
     const createOrUpdateSubjectStudent = async ({ fields }) => {
         setLoadingSubmit(true);
 
@@ -107,22 +98,12 @@ const useSubjectStudent = () => {
             },
         };
 
-        let response;
-        if (subjectStudent) {
-            response = await patch({
-                uri: `/admin/subject-students/${subjectStudent._id}`,
-                body,
-                navigate,
-                location,
-            });
-        } else {
-            response = await post({
-                uri: '/admin/subject-students',
-                body,
-                navigate,
-                location,
-            });
-        }
+        const response = await post({
+            uri: '/admin/subject-students',
+            body,
+            navigate,
+            location,
+        });
 
         if (response?.meta?.code !== 200) {
             setMeta(response?.meta);
@@ -151,10 +132,8 @@ const useSubjectStudent = () => {
     useEffect(() => {
         getSubjectStudents(query);
         getSemesterOptions();
-        getStudentOptions();
 
         return () => {
-            setSubjectStudent(null);
             setMeta(null);
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -170,7 +149,6 @@ const useSubjectStudent = () => {
 
             if (meta.code === 200) {
                 getSubjectStudents();
-                setSubjectStudent(null);
             }
         }
 
@@ -181,20 +159,17 @@ const useSubjectStudent = () => {
     return {
         meta,
         resetMeta,
-        setSubjectStudent,
+        getStudentOptions,
         getSemesterOptions,
         getSubjectStudents,
-        getSubjectStudentById,
         createOrUpdateSubjectStudent,
         deleteSubjectStudentById,
         loadingSubmit,
         loadingSemesters,
         loadingStudents,
-        loadingSubjectStudent,
         loadingSubjectStudents,
         students,
         semesters,
-        subjectStudent,
         subjectStudents,
         total,
         page,

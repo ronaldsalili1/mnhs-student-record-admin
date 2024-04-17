@@ -1,42 +1,28 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Modal, Form, Button, Flex } from 'antd';
 import dayjs from 'dayjs';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 
 import SkeletonSelect from '../../../../components/CustomUI/SkeletonSelect';
-import { filterOption } from '../../../../helpers/general';
+import { filterOption, formatFullName } from '../../../../helpers/general';
 
 dayjs.extend(isSameOrBefore);
 
 const { Item } = Form;
 
-const SubjectStudentModal = ({ subjectStudentProps, ...rest }) => {
+const SubjectStudentModal = ({ subjectStudentProps, activeSemester, disabledStudents, setSelectedSemester, ...rest }) => {
+    console.log('🚀 ~ subjectStudentProps:', subjectStudentProps);
     const formRef = useRef(null);
 
     const {
         loadingSemesters,
         loadingStudents,
         loadingSubmit,
-        loadingSubjectStudent,
         students,
         semesters,
-        subjectStudent,
         createOrUpdateSubjectStudent,
     } = subjectStudentProps;
-
-    useEffect(() => {
-        if (subjectStudent) {
-            formRef.current?.setFieldsValue({
-                ...subjectStudent,
-                student_id: subjectStudent.student._id,
-            });
-        }
-    }, [subjectStudent]);
-
-    const activeSemester = useMemo(() => {
-        return semesters.find(semester => semester.status === 'active') ;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [semesters]);
+    console.log('🚀 ~ activeSemester:', activeSemester);
 
     return (
         <Modal
@@ -68,7 +54,7 @@ const SubjectStudentModal = ({ subjectStudentProps, ...rest }) => {
                     ]}
                 >
                     <SkeletonSelect
-                        loading={loadingSemesters || loadingSubjectStudent}
+                        loading={loadingSemesters}
                         placeholder="Select Semester"
                         showSearch
                         filterOption={filterOption}
@@ -79,30 +65,30 @@ const SubjectStudentModal = ({ subjectStudentProps, ...rest }) => {
                                 value: semester._id,
                             };
                         })}
+                        onChange={value => setSelectedSemester(value)}
                     />
                 </Item>
                 <Item
-                    name="student_id"
-                    label="Student:"
+                    name="student_ids"
+                    label="Students:"
                     rules={[
                         {
                             required: true,
-                            message: 'Student is required',
+                            message: 'Students are required',
                         },
                     ]}
                 >
                     <SkeletonSelect
-                        loading={loadingStudents || loadingSubjectStudent}
+                        loading={loadingStudents}
+                        disabled={disabledStudents}
                         placeholder="Select Student"
+                        mode="multiple"
                         showSearch
                         filterOption={filterOption}
-                        options={students.map(student => {
-                            const { last_name, first_name, suffix, middle_name } = student;
-                            return {
-                                label: `${last_name}, ${first_name}${suffix ? ', ' + suffix : '' }${middle_name ? ', ' + middle_name : ''}`,
-                                value: student._id,
-                            };
-                        })}
+                        options={students.map(student => ({
+                            label: formatFullName(student),
+                            value: student._id,
+                        }))}
                     />
                 </Item>
                 

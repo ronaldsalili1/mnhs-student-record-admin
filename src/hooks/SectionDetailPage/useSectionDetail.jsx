@@ -72,7 +72,7 @@ const useSectionDetail = (sectionId) => {
         setSection(section);
         setLoadingSubmit(false);
 
-        navigate(`/sections/${section._id}`);
+        navigate(`/sections/${section._id}/information`);
     };
 
     useEffect(() => {

@@ -33,12 +33,6 @@ const useSectionStudent = () => {
     const getStudentOptions = async (semesterId) => {
         setLoadingStudents(true);
 
-        const query = {
-            section_id: sectionId,
-            semester_id: semesterId,
-        };
-        console.log('🚀 ~ query:', query);
-
         const response = await get({
             uri: '/admin/section-students/options/students',
             navigate,

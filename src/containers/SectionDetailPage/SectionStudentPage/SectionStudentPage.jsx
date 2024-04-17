@@ -49,14 +49,12 @@ const SectionStudentPage = () => {
 
     useEffect(() => {
         if (modal) {
-            if (activeSemester) {
-                setDisabledStudents(false);
-                getStudentOptions(activeSemester._id);
-            }
-    
             if (selectedSemester) {
                 setDisabledStudents(false);
                 getStudentOptions(selectedSemester);
+            } else if (activeSemester) {
+                setDisabledStudents(false);
+                getStudentOptions(activeSemester._id);
             }
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Table, Typography, Button, Flex, Grid, Divider, Modal } from 'antd';
 import { PlusSquareFilled, ExclamationCircleFilled } from '@ant-design/icons';
@@ -13,6 +13,8 @@ const { confirm } = Modal;
 
 const SubjectStudentPage = () => {
     const [modal, setModal] = useState(false);
+    const [disabledStudents, setDisabledStudents] = useState(true);
+    const [selectedSemester, setSelectedSemester] = useState(null);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -26,19 +28,40 @@ const SubjectStudentPage = () => {
         page,
         limit,
         total,
+        semesters,
         getSubjectStudents,
         subjectStudent,
-        setSubjectStudent,
         deleteSubjectStudentById,
         getSubjectStudentById,
+        getStudentOptions,
     } = subjectStudentProps;
+    console.log('🚀 ~ semesters:', semesters);
  
+
+    const activeSemester = useMemo(() => {
+        return semesters.find(semester => semester.status === 'active') ;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [semesters]);
+    console.log('🚀 ~ activeSemester:', activeSemester);
 
     useEffect(() => {
         if (meta?.code === 200) {
             setModal(false);
         }
     }, [meta]);
+
+    useEffect(() => {
+        if (modal) {
+            if (selectedSemester) {
+                setDisabledStudents(false);
+                getStudentOptions(selectedSemester);
+            } else if (activeSemester) {
+                setDisabledStudents(false);
+                getStudentOptions(activeSemester._id);
+            }
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedSemester, semesters, modal]);
 
     const confirmDelete = (id) => {
         confirm({
@@ -67,25 +90,14 @@ const SubjectStudentPage = () => {
             key: 'action',
             render: (_, record) => {
                 return (
-                    <>
-                        <Link
-                            onClick={() => {
-                                getSubjectStudentById(record._id);
-                                setModal(true);
-                            }}
-                        >
-                            Edit
-                        </Link>  
-                        <Divider type="vertical" />
-                        <Link
-                            type="danger"
-                            onClick={() => {
-                                confirmDelete(record._id);
-                            }}
-                        >
+                    <Link
+                        type="danger"
+                        onClick={() => {
+                            confirmDelete(record._id);
+                        }}
+                    >
                             Delete
-                        </Link>  
-                    </> 
+                    </Link>
                 );
             },
         },
@@ -132,20 +144,19 @@ const SubjectStudentPage = () => {
                 }}
             />
             <SubjectStudentModal
-                title={subjectStudent
-                    ? `${subjectStudent.student.last_name}, 
-                        ${subjectStudent.student.first_name}
-                        ${subjectStudent.student.suffix ? ', ' + subjectStudent.student.suffix : '' }
-                        ${subjectStudent.student.middle_name ? ', ' + subjectStudent.student.middle_name : ''}`
-                    : 'Add Student'}
+                title="Add Student"
                 destroyOnClose={true}
                 width={450}
                 open={modal}
                 onCancel={() => {
                     setModal(false);
-                    setSubjectStudent(null);
+                    setDisabledStudents(true);
+                    setSelectedSemester(null);
                 }}
                 subjectStudentProps={subjectStudentProps}
+                disabledStudents={disabledStudents}
+                setSelectedSemester={setSelectedSemester}
+                activeSemester={activeSemester}
             />
         </Flex>
     );

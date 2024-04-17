@@ -48,7 +48,13 @@ const useSectionAdviser = () => {
     const getSectionAdvisers = async (query) => {
         setLoadingSectionAdvisers(true);
 
-        const response = await get({ uri: '/admin/section-advisers', query, navigate, location });
+        const newQuery = query
+            ? {
+                ...query, 
+                section_id: sectionId,
+            }
+            : { section_id: sectionId };
+        const response = await get({ uri: '/admin/section-advisers', query: newQuery, navigate, location });
         if (response?.meta?.code !== 200) {
             setMeta(response?.meta);
             setLoadingSectionAdvisers(false);
