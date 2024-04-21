@@ -16,7 +16,7 @@ const StudentForm = (props) => {
     const { loadingStudent, createOrUpdateStudent, student, loadingSubmit } = props;
 
     useEffect(() => {
-        const { birthdate, shs_admission_date, student_shs_eligibility } = student || {};
+        const { birthdate, shs_admission_date, student_shs_eligibility, shs_graduation_date } = student || {};
         const {
             completion_date,
             assesment_date,
@@ -31,6 +31,7 @@ const StudentForm = (props) => {
             ...student_shs_eligibility,
             birthdate: birthdate ? dayjs(birthdate) : null,
             shs_admission_date: shs_admission_date ? dayjs(shs_admission_date) : null,
+            shs_graduation_date: shs_graduation_date ? dayjs(shs_graduation_date) : null,
             completion_date: completion_date ? dayjs(completion_date) : null,
             assesment_date: assesment_date ? dayjs(assesment_date) : null,
             als_ae_passer: als_ae_passer ? 'yes' : 'no',
@@ -227,6 +228,17 @@ const StudentForm = (props) => {
                     loading={loadingStudent}
                     placeholder="Select Strand"
                     options={options.strand}
+                />
+            </Item>
+            <Item
+                name="shs_graduation_date"
+                label="Date of SHS Graduation:"
+            >
+                <SkeletonDatePicker
+                    loading={loadingStudent}
+                    placeholder="Select Date"
+                    style={{ width: '100%' }}
+                    allowClear
                 />
             </Item>
             <Item>
