@@ -40,7 +40,7 @@ const StudentShsEligibilityForm = (props) => {
         <Form
             ref={formRef}
             layout="vertical"
-            onFinish={values => createOrUpdateStudentShsEligibility({ studentShsEligibilityId: createOrUpdateStudentShsEligibility?._id, fields: removeObjNilValues(values) })}
+            onFinish={values => createOrUpdateStudentShsEligibility({ studentShsEligibilityId: studentShsEligibility?._id, fields: removeObjNilValues(values) })}
             style={{
                 width: 400,
             }}
