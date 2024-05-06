@@ -15,9 +15,6 @@ import LoginPage from './containers/LoginPage/LoginPage';
 import AdministratorPage from './containers/AdministratorPage/AdministratorPage';
 import AdministratorDetailPage from './containers/AdministratorDetailPage/AdministratorDetailPage';
 
-// Grade Pages
-import GradePage from './containers/GradePage/GradePage';
-
 // Student Page
 import StudentPage from './containers/StudentPage/StudentPage';
 import StudentDetailPage from './containers/StudentDetailPage/StudentDetailPage';
@@ -44,6 +41,9 @@ import SectionDetailPage from './containers/SectionDetailPage/SectionDetailPage'
 // Student Form Page
 import FormPage from './containers/FormPage/FormPage';
 
+// Grade Submissions
+import GradeSubmissions from './containers/GradeSubmissions/GradeSubmissions';
+
 const router = createBrowserRouter(
     createRoutesFromElements(
         <Route>
@@ -59,8 +59,8 @@ const router = createBrowserRouter(
             </Route>
             <Route element={<Navigation/>}>
                 <Route
-                    path="grades"
-                    element={<GradePage/>}
+                    path="grade-submissions"
+                    element={<GradeSubmissions/>}
                 />
                 <Route
                     path="students"

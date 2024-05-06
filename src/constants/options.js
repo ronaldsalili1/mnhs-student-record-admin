@@ -107,4 +107,18 @@ export default {
             value: '12',
         },
     ],
+    gradeSubmissionStatus: [
+        {
+            label: 'Pending',
+            value: 'pending',
+        },
+        {
+            label: 'Under Review',
+            value: 'under_review',
+        },
+        {
+            label: 'Approved',
+            value: 'approved',
+        },
+    ],
 };

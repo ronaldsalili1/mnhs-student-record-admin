@@ -5,7 +5,7 @@ import {
     UserOutlined,
     ClockCircleOutlined,
     HomeOutlined,
-    OrderedListOutlined,
+    SendOutlined,
     IdcardOutlined,
     SolutionOutlined,
     SnippetsOutlined,
@@ -28,7 +28,7 @@ function getItem(label, key, icon, children, theme) {
 }
 
 const items = [
-    getItem('Grades', 'grades', <OrderedListOutlined />),
+    getItem('Grade Submissions', 'grade-submissions', <SendOutlined />),
     getItem('Student Forms', 'forms', <FormOutlined />),
     getItem('Semesters', 'semesters', <ClockCircleOutlined />),
     getItem('Subjects', 'subjects', <CalculatorOutlined />),
@@ -41,8 +41,8 @@ const items = [
 
 const getActiveItem = ({ pathname }) => {
     switch (true) {
-        case /\/grades/.test(pathname):
-            return ['grades'];
+        case /\/grade-submissions/.test(pathname):
+            return ['grade-submissions'];
         case /\/students/.test(pathname):
             return ['students'];
         case /\/teachers/.test(pathname):
