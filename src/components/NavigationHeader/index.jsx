@@ -1,19 +1,27 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Layout, Flex, Typography, Row, Col, Popover, theme, Avatar } from 'antd';
 import { LogoutOutlined, DownOutlined } from '@ant-design/icons';
 
 import './NavigationHeader.css';
-import useAuth from '../../hooks/useAuth';
 import { AuthContext } from '../../providers/AuthProvider';
+import { post } from '../../helpers/request';
+import { removeAuthenticated } from '../../helpers/localStorage';
+import { NavigationContext } from '../../providers/NavigationProvider';
 
 const { Header } = Layout;
 const { Title, Text } = Typography;
 
 const NavigationHeader = () => {
     const { token } = theme.useToken();
-    const { logout } = useAuth();
     const { admin } = useContext(AuthContext);
     const { first_name, last_name, email } = admin || {};
+
+    const [meta, setMeta] = useState(null);
+    const navigate = useNavigate();
+    const location = useLocation();
+    const layoutState = useContext(NavigationContext);
+    const { notificationApi } = layoutState;
 
     const avatar = (
         <Avatar
@@ -23,6 +31,29 @@ const NavigationHeader = () => {
             {first_name ? first_name.charAt(0) : ''}
         </Avatar>
     );
+
+    const logout = async () => {
+        const response = await post({ uri: '/admin/auth/logout', navigate, location });
+        if (response?.meta?.code !== 200) {
+            setMeta(response?.meta);
+            return;
+        }
+        removeAuthenticated();
+        navigate('/login');
+    };
+
+    useEffect(() => {
+        if (meta) {
+            const type = meta.code === 200 ? 'success' : 'error';
+            notificationApi[type]({
+                message: meta.message,
+                placement: 'bottomRight',
+            });
+        }
+
+        return () => setMeta(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [meta]);
 
     return (
         <Header
