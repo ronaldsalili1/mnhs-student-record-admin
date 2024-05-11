@@ -74,7 +74,7 @@ const GradeSubmissions = () => {
             render: (_, record) => {
                 return (
                     <Link
-                        onClick={() => navigate(`/grade-submission/${record._id}`)}
+                        onClick={() => navigate(`/grade-submissions/${record._id}`)}
                     >
 						View
                     </Link>   

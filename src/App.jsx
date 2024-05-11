@@ -43,6 +43,7 @@ import FormPage from './containers/FormPage/FormPage';
 
 // Grade Submissions
 import GradeSubmissions from './containers/GradeSubmissions/GradeSubmissions';
+import GradeSubmissionDetailPage from './containers/GradeSubmissionDetailPage/GradeSubmissionDetailPage';
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -96,6 +97,12 @@ const router = createBrowserRouter(
                 />
             </Route>
             <Route element={<Navigation breadcrumb={true}/>}>
+
+                {/* Student Pages */}
+                <Route
+                    path="grade-submissions/:gradeSubmissionId"
+                    element={<GradeSubmissionDetailPage/>}
+                />
 
                 {/* Student Pages */}
                 <Route
