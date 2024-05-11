@@ -1,7 +1,6 @@
 import { useContext, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Table, Typography, Flex, Grid, Button } from 'antd';
-import { PlusSquareFilled } from '@ant-design/icons';
+import { Table, Typography, Flex } from 'antd';
 import dayjs from 'dayjs';
 
 import { NavigationContext } from '../../providers/NavigationProvider';
@@ -9,13 +8,13 @@ import { getParamsFromUrl, formatFullName, objectToQueryString } from '../../hel
 import useGradeSubmission from '../../hooks/useGradeSubmission';
 import options from '../../constants/options';
 import { formatSemester } from '../../helpers/semester';
+import GradeSubmissionSearchForm from './components/GradeSubmissionSearchForm';
 
 const { Link } = Typography;
 
 const GradeSubmissions = () => {
     const layoutState = useContext(NavigationContext);
     const { setTitle } = layoutState;
-    const { xs } = Grid.useBreakpoint();
 
     const query = getParamsFromUrl();
     const navigate = useNavigate();
@@ -91,15 +90,7 @@ const GradeSubmissions = () => {
                 gap={10}
                 style={{ margin: '10px 0px' }}
             >
-                {/* <Button
-                    type="primary"
-                    icon={<PlusSquareFilled />}
-                    htmlType="submit"
-                    style={{ ...(xs && { width: '100%' }) }}
-                    onClick={() => navigate('/grade-submission/create')}
-                >
-                    Submit Grades
-                </Button> */}
+                <GradeSubmissionSearchForm getGradeSubmissions={getGradeSubmissions} />
             </Flex>
             <Table
                 loading={loadingGradeSubmissions}

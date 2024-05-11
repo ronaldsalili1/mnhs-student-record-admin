@@ -24,7 +24,7 @@ const LoginPage = () => {
             if (query.path) {
                 navigate(query.path, { replace: true });
             } else {
-                navigate('/grades');
+                navigate('/grade-submissions');
             }
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -33,7 +33,6 @@ const useGradeSubmissionDetail = () => {
             navigate,
             location,
         });
-        console.log('🚀 ~ getGradeSubmissionById ~ response:', response);
 
         if (response?.meta?.code !== 200) {
             setMeta(response?.meta);
@@ -47,6 +46,36 @@ const useGradeSubmissionDetail = () => {
         setSubject(response?.data?.subject);
         setStudentGradeData(response?.data?.student_grade_data);
         setLoadingGrades(false);
+    };
+
+    const updateGradeSubmissionStatus = async ({ fields }) => {
+        setLoadingSubmit(true);
+
+        const body = {
+            grade_submission: {
+                ...fields,
+            },
+        };
+
+        const response = await patch({
+            uri: `/admin/grades/submissions/${gradeSubmissionId}/update-status`,
+            body,
+            navigate,
+            location,
+        });
+
+        if (response?.meta?.code !== 200) {
+            setMeta(response?.meta);
+            setLoadingSubmit(false);
+            return;
+        }
+
+        setMeta(response.meta);
+        setGradeSubmission({
+            ...gradeSubmission,
+            ...response?.data?.grade_submission,
+        });
+        setLoadingSubmit(false);
     };
 
     useEffect(() => {
@@ -90,6 +119,7 @@ const useGradeSubmissionDetail = () => {
         setLoadingGrades,
         gradeSubmission,
         setQuarter,
+        updateGradeSubmissionStatus,
     };
 };
 

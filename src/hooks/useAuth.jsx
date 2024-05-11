@@ -60,7 +60,7 @@ const useAuth = () => {
             return;
         }
 
-        navigate('/grades', { replace: true });
+        navigate('/grade-submissions', { replace: true });
     };
 
     const logout = async () => {

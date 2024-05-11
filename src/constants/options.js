@@ -109,16 +109,20 @@ export default {
     ],
     gradeSubmissionStatus: [
         {
+            label: 'Approved',
+            value: 'approved',
+        },
+        {
             label: 'Pending',
             value: 'pending',
         },
         {
-            label: 'Under Review',
-            value: 'under_review',
+            label: 'Rejected',
+            value: 'rejected',
         },
         {
-            label: 'Approved',
-            value: 'approved',
+            label: 'Under Review',
+            value: 'under_review',
         },
     ],
 };
