@@ -13,7 +13,7 @@ import {
     FormOutlined,
 } from '@ant-design/icons';
 
-import mnhsLogo from '../../images/mnhs-logo.png';
+import mnhsLogo from '../../images/mnhs-logo.webp';
 
 const { Sider } = Layout;
 
