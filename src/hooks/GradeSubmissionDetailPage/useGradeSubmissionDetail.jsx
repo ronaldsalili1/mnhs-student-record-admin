@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 
-import { get, post, patch } from '../../helpers/request';
+import { get, patch } from '../../helpers/request';
 import { NavigationContext } from '../../providers/NavigationProvider';
 
 const useGradeSubmissionDetail = () => {
