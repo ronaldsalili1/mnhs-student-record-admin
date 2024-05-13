@@ -6,7 +6,7 @@ import { NavigationContext } from '../../providers/NavigationProvider';
 import useStudentDetail from '../../hooks/StudentDetailPage/useStudentDetail';
 import DetailTab from '../../components/DetailTab';
 import StudentBasicPage from './StudentBasicPage/StudentBasicPage';
-import StudentSubjectGradePage from './StudentSubjectGradePage/StudentSubjectGradePage';
+// import StudentSubjectGradePage from './StudentSubjectGradePage/StudentSubjectGradePage';
 import StudentShsEligibilityPage from './StudentShsEligibilityPage/StudentShsEligibilityPage';
 
 const StudentDetailPage = () => {
@@ -65,11 +65,11 @@ const StudentDetailPage = () => {
                     label: 'SHS Eligibility',
                     children: <StudentShsEligibilityPage />,
                 },
-                {
-                    key: 'subject-grades',
-                    label: 'Subject Grades',
-                    children: <StudentSubjectGradePage />,
-                },
+                // {
+                //     key: 'subject-grades',
+                //     label: 'Subject Grades',
+                //     children: <StudentSubjectGradePage />,
+                // },
             ]}
             onTabClick={value => navigate(`/students/${studentId}/${value}`)}
         />
