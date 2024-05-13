@@ -65,7 +65,41 @@ const SubjectStudentPage = (props) => {
             title: 'Name (Last, First, Middle, Suffix)',
             dataIndex: 'name',
             key: 'name',
-            render: (_, record) => formatFullName(record?.student),
+            render: (_, record) => formatFullName(record),
+        },
+        {
+            title: 'Grades',
+            children: [
+                {
+                    title: 'Q1',
+                    dataIndex: 'quarter_1',
+                    key: 'quarter_1',
+                    render: (_, record) => record?.grade?.quarter_1 || '-',
+                },
+                {
+                    title: 'Q2',
+                    dataIndex: 'quarter_2',
+                    key: 'quarter_2',
+                    render: (_, record) => record?.grade?.quarter_2 || '-',
+                },
+                {
+                    title: 'Final',
+                    dataIndex: 'final_grade',
+                    key: 'final_grade',
+                    render: (_, record) => {
+                        const { quarter_1, quarter_2 } = record?.grade || {};
+                        let grade;
+                        if (quarter_1 && !quarter_2) {
+                            grade = quarter_1;
+                        } else if (!quarter_1 && quarter_2) {
+                            grade = quarter_2;
+                        } else if (quarter_1 && quarter_2) {
+                            grade = (quarter_1 + quarter_2) / 2;
+                        }
+                        return grade ? Math.round(grade) : '-';
+                    },
+                },
+            ],
         },
         {
             title: 'Action',
@@ -76,7 +110,7 @@ const SubjectStudentPage = (props) => {
                     <Link
                         type="danger"
                         onClick={() => {
-                            confirmDelete(record._id);
+                            confirmDelete(record.subject_student_id);
                         }}
                     >
                             Delete
@@ -117,6 +151,7 @@ const SubjectStudentPage = (props) => {
             <Table
                 loading={loadingSubjectStudents}
                 scroll={ { x: true } }
+                bordered
                 dataSource={subjectStudents.map(subjectStudent => ({ ...subjectStudent, key: subjectStudent._id }))}
                 columns={columns}
                 pagination={{
@@ -143,7 +178,7 @@ const SubjectStudentPage = (props) => {
                 selectedStudents={selectedStudents}
                 setSelectedStudents={setSelectedStudents}
                 searchBySection={true}
-                exclude={subjectStudents.map(subjectStudent => subjectStudent.student._id)}
+                exclude={subjectStudents.map(subjectStudent => subjectStudent._id)}
                 excludeStudentsInSection={false}
                 actionComponent={(
                     <Button

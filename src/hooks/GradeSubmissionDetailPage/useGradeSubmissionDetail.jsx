@@ -13,6 +13,7 @@ const useGradeSubmissionDetail = () => {
     const [subject, setSubject] = useState(null);
     const [loadingGrades, setLoadingGrades] = useState(false);
     const [gradeSubmission, setGradeSubmission] = useState(null);
+    const [section, setSection] = useState(null);
 
     const layoutState = useContext(NavigationContext);
     const { notificationApi } = layoutState;
@@ -44,6 +45,7 @@ const useGradeSubmissionDetail = () => {
         setSemester(response?.data?.semester);
         setQuarter(response?.data?.quarter);
         setSubject(response?.data?.subject);
+        setSection(response?.data?.section);
         setStudentGradeData(response?.data?.student_grade_data);
         setLoadingGrades(false);
     };
@@ -120,6 +122,7 @@ const useGradeSubmissionDetail = () => {
         gradeSubmission,
         setQuarter,
         updateGradeSubmissionStatus,
+        section,
     };
 };
 

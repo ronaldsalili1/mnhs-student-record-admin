@@ -21,6 +21,7 @@ const GradeSubmissionDetailPage = () => {
         gradeSubmission,
         updateGradeSubmissionStatus,
         loadingSubmit,
+        section,
     } = gradeSubmissionDetailProps;
 
     const navigate = useNavigate();
@@ -80,6 +81,18 @@ const GradeSubmissionDetailPage = () => {
                 gap={10}
                 style={{ margin: '30px 0px 15px' }}
             >
+                <Flex gap={20}>
+                    <span>
+                        <strong>Section:</strong>
+                    </span>
+                    <span>
+                        {
+                            section ? 
+                                section.name
+                                : '-'
+                        }
+                    </span>
+                </Flex>
                 <Flex gap={10}>
                     <span>
                         <strong>Semester:</strong>
