@@ -9,7 +9,6 @@ import SubjectBasicPage from './SubjectBasicPage/SubjectBasicPage';
 import SubjectTeacherPage from './SubjectTeacherPage/SubjectTeacherPage';
 import SubjectStudentPage from './SubjectStudentPage/SubjectStudentPage';
 
-
 const SubjectDetailPage = () => {
     const layoutState = useContext(NavigationContext);
     const { setBreadcrumbItems, setTitle } = layoutState;
@@ -68,7 +67,7 @@ const SubjectDetailPage = () => {
                 {
                     key: 'subject-student',
                     label: 'Students',
-                    children: <SubjectStudentPage />,
+                    children: <SubjectStudentPage {...subjectProps} />,
                 },
             ]}
             onTabClick={value => navigate(`/subjects/${subjectId}/${value}`)}

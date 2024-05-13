@@ -1,21 +1,24 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useContext, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Table, Typography, Button, Flex, Grid, Modal } from 'antd';
 import { PlusSquareFilled, ExclamationCircleFilled } from '@ant-design/icons';
 
+import { AuthContext } from '../../../providers/AuthProvider'; 
 import { formatFullName, getParamsFromUrl, objectToQueryString } from '../../../helpers/general';
-import SectionStudentModal from './components/SectionStudentModal';
 import useSectionStudent from '../../../hooks/SectionDetailPage/useSectionStudent';
 import SectionStudentSearchForm from './components/SectionStudentSearchForm';
+import StudentSearchModal from '../../../components/StudentSearchModal';
+import StudentConfirmationModal from './components/StudentConfirmationModal';
 
 const { Link } = Typography;
 const { confirm } = Modal;
 
-const SectionStudentPage = () => {
-    const [modal, setModal] = useState(false);
-    const [disabledStudents, setDisabledStudents] = useState(true);
-    const [selectedSemester, setSelectedSemester] = useState(null);
+const SectionStudentPage = (props) => {
+    const [addStudentsModal, setAddStudentsModal] = useState(false);
+    const [confirmation, setConfirmation] = useState(false);
+    const [selectedStudents, setSelectedStudents] = useState([]);
 
+    const { activeSemester } = useContext(AuthContext);
     const navigate = useNavigate();
     const location = useLocation();
     const query = getParamsFromUrl();
@@ -23,42 +26,32 @@ const SectionStudentPage = () => {
     const sectionStudentProps = useSectionStudent();
     const {
         meta,
-        getStudentOptions,
         getSectionStudents,
         deleteSectionStudentById,
         sectionStudents,
         loadingSectionStudents,
-        semesters,
         total,
         page,
         limit,
+        loadingSubmit,
+        createSectionStudents,
     } = sectionStudentProps;
 
-    const activeSemester = useMemo(() => {
-        return semesters.find(semester => semester.status === 'active') ;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [semesters]);
+    const onAddStudent = () => {
+        createSectionStudents({
+            fields: {
+                student_ids: selectedStudents,
+                semester_id: activeSemester._id,
+            },
+        });
+    };
 
     useEffect(() => {
         if (meta?.code === 200) {
-            setModal(false);
-            setDisabledStudents(true);
-            setSelectedSemester(null);
+            setConfirmation(false);
+            setAddStudentsModal(false);
         }
     }, [meta]);
-
-    useEffect(() => {
-        if (modal) {
-            if (selectedSemester) {
-                setDisabledStudents(false);
-                getStudentOptions(selectedSemester);
-            } else if (activeSemester) {
-                setDisabledStudents(false);
-                getStudentOptions(activeSemester._id);
-            }
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedSemester, semesters, modal]);
 
     const confirmDelete = (id) => {
         confirm({
@@ -125,7 +118,7 @@ const SectionStudentPage = () => {
                     type="primary"
                     icon={<PlusSquareFilled />}
                     style={{ ...(xs && { width: '100%' }) }}
-                    onClick={() => setModal(true)}
+                    onClick={() => setAddStudentsModal(true)}
                 >
                     Add Student
                 </Button>
@@ -149,22 +142,41 @@ const SectionStudentPage = () => {
                     pageSize: limit,
                 }}
             />
-            <SectionStudentModal
+            <StudentSearchModal
                 title="Add Students"
+                width={800}
+                open={addStudentsModal}
+                destroyOnClose={true}
+                maskClosable={false}
+                onCancel={() => setAddStudentsModal(false)}
+                selectedStudents={selectedStudents}
+                setSelectedStudents={setSelectedStudents}
+                searchBySection={false}
+                exclude={sectionStudents.map(sectionStudent => sectionStudent.student._id)}
+                excludeStudentsInSection={true}
+                actionComponent={(
+                    <Button
+                        disabled={selectedStudents.length === 0}
+                        size="large"
+                        type="primary"
+                        icon={<PlusSquareFilled />}
+                        htmlType="submit"
+                        style={{ width: '100%', marginTop: 10 }}
+                        onClick={() => setConfirmation(true)}
+                    >
+                        Save Selected Students
+                    </Button>
+                )}
+            />
+            <StudentConfirmationModal
+                title="Confirmation"
                 destroyOnClose={true}
                 width={450}
-                open={modal}
-                onCancel={() => {
-                    setModal(false);
-                    setDisabledStudents(true);
-                    setSelectedSemester(null);
-                }}
-                sectionStudentProps={sectionStudentProps}
-                disabledStudents={disabledStudents}
-                setDisabledStudents={setDisabledStudents}
-                selectedSemester={selectedSemester}
-                setSelectedSemester={setSelectedSemester}
-                activeSemester={activeSemester}
+                open={confirmation}
+                onCancel={() => setConfirmation(false)}
+                subject={props?.section}
+                loadingSubmit={loadingSubmit}
+                onConfirm={onAddStudent}
             />
         </Flex>
     );

@@ -1,21 +1,20 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useContext, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Table, Typography, Button, Flex, Grid, Divider, Modal } from 'antd';
+import { Table, Typography, Button, Flex, Grid, Modal } from 'antd';
 import { PlusSquareFilled, ExclamationCircleFilled } from '@ant-design/icons';
 
+import { AuthContext } from '../../../providers/AuthProvider';
 import useSubjectStudent from '../../../hooks/SubjectDetailPage/useSubjectStudent';
-import SubjectStudentModal from './components/SubjectStudentModal';
 import SubjectStudentSearchForm from './components/SubjectStudentSearchForm';
 import { formatFullName, getParamsFromUrl, objectToQueryString } from '../../../helpers/general';
+import StudentSearchModal from '../../../components/StudentSearchModal';
+import StudentConfirmationModal from './components/StudentConfirmationModal';
 
 const { Link } = Typography;
 const { confirm } = Modal;
 
-const SubjectStudentPage = () => {
-    const [modal, setModal] = useState(false);
-    const [disabledStudents, setDisabledStudents] = useState(true);
-    const [selectedSemester, setSelectedSemester] = useState(null);
-
+const SubjectStudentPage = (props) => {
+    const { activeSemester } = useContext(AuthContext);
     const navigate = useNavigate();
     const location = useLocation();
     const query = getParamsFromUrl();
@@ -28,40 +27,15 @@ const SubjectStudentPage = () => {
         page,
         limit,
         total,
-        semesters,
         getSubjectStudents,
-        subjectStudent,
         deleteSubjectStudentById,
-        getSubjectStudentById,
-        getStudentOptions,
+        loadingSubmit,
+        createOrUpdateSubjectStudent,
     } = subjectStudentProps;
-    console.log('🚀 ~ semesters:', semesters);
- 
 
-    const activeSemester = useMemo(() => {
-        return semesters.find(semester => semester.status === 'active') ;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [semesters]);
-    console.log('🚀 ~ activeSemester:', activeSemester);
-
-    useEffect(() => {
-        if (meta?.code === 200) {
-            setModal(false);
-        }
-    }, [meta]);
-
-    useEffect(() => {
-        if (modal) {
-            if (selectedSemester) {
-                setDisabledStudents(false);
-                getStudentOptions(selectedSemester);
-            } else if (activeSemester) {
-                setDisabledStudents(false);
-                getStudentOptions(activeSemester._id);
-            }
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedSemester, semesters, modal]);
+    const [addStudentsModal, setAddStudentsModal] = useState(false);
+    const [confirmation, setConfirmation] = useState(false);
+    const [selectedStudents, setSelectedStudents] = useState([]);
 
     const confirmDelete = (id) => {
         confirm({
@@ -73,6 +47,15 @@ const SubjectStudentPage = () => {
             okText: 'Delete',
             onOk: () => {
                 deleteSubjectStudentById(id);
+            },
+        });
+    };
+
+    const onAddStudent = () => {
+        createOrUpdateSubjectStudent({
+            fields: {
+                student_ids: selectedStudents,
+                semester_id: activeSemester._id,
             },
         });
     };
@@ -103,6 +86,13 @@ const SubjectStudentPage = () => {
         },
     ];
 
+    useEffect(() => {
+        if (meta?.code === 200) {
+            setConfirmation(false);
+            setAddStudentsModal(false);
+        }
+    }, [meta]);
+
     return (
         <Flex
             vertical
@@ -119,7 +109,7 @@ const SubjectStudentPage = () => {
                     type="primary"
                     icon={<PlusSquareFilled />}
                     style={{ ...(xs && { width: '100%' }) }}
-                    onClick={() => setModal(true)}
+                    onClick={() => setAddStudentsModal(true)}
                 >
                     Add Student
                 </Button>
@@ -143,20 +133,41 @@ const SubjectStudentPage = () => {
                     pageSize: limit,
                 }}
             />
-            <SubjectStudentModal
-                title="Add Student"
+            <StudentSearchModal
+                title="Add Students"
+                width={800}
+                open={addStudentsModal}
+                destroyOnClose={true}
+                maskClosable={false}
+                onCancel={() => setAddStudentsModal(false)}
+                selectedStudents={selectedStudents}
+                setSelectedStudents={setSelectedStudents}
+                searchBySection={true}
+                exclude={subjectStudents.map(subjectStudent => subjectStudent.student._id)}
+                excludeStudentsInSection={false}
+                actionComponent={(
+                    <Button
+                        disabled={selectedStudents.length === 0}
+                        size="large"
+                        type="primary"
+                        icon={<PlusSquareFilled />}
+                        htmlType="submit"
+                        style={{ width: '100%', marginTop: 10 }}
+                        onClick={() => setConfirmation(true)}
+                    >
+                        Save Selected Students
+                    </Button>
+                )}
+            />
+            <StudentConfirmationModal
+                title="Confirmation"
                 destroyOnClose={true}
                 width={450}
-                open={modal}
-                onCancel={() => {
-                    setModal(false);
-                    setDisabledStudents(true);
-                    setSelectedSemester(null);
-                }}
-                subjectStudentProps={subjectStudentProps}
-                disabledStudents={disabledStudents}
-                setSelectedSemester={setSelectedSemester}
-                activeSemester={activeSemester}
+                open={confirmation}
+                onCancel={() => setConfirmation(false)}
+                subject={props?.subject}
+                loadingSubmit={loadingSubmit}
+                onConfirm={onAddStudent}
             />
         </Flex>
     );

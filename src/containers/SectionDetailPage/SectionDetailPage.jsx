@@ -68,7 +68,7 @@ const SectionDetailPage = () => {
                 {
                     key: 'section-students',
                     label: 'Students',
-                    children: <SectionStudentPage />,
+                    children: <SectionStudentPage {...sectionDetailProps} />,
                 },
             ]}
             onTabClick={value => navigate(`/sections/${sectionId}/${value}`)}

@@ -7,6 +7,7 @@ const useAuth = () => {
     const [checkingAuthStatus, setCheckingAuthStatus] = useState(false);
     const [meta, setMeta] = useState(null);
     const [admin, setAdmin] = useState(null);
+    const [activeSemester, setActiveSemester] = useState(null);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -25,6 +26,7 @@ const useAuth = () => {
         }
 
         setAdmin(response?.data?.admin);
+        setActiveSemester(response?.data?.semester);
         setCheckingAuthStatus(false);
     };
   
@@ -34,6 +36,7 @@ const useAuth = () => {
         admin,
         resetMeta,
         checkAuthStatus,
+        activeSemester,
     };
 };
 
